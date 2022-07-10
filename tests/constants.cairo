@@ -1,0 +1,1 @@
+const CALLER_ADDRESS = 0x123
