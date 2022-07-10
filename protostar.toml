@@ -8,6 +8,3 @@ libs_path = "lib"
 main = [
     "./contracts/main.cairo",
 ]
-erc20 = [
-    "./contracts/ERC20.cairo",
-]
