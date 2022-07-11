@@ -1,12 +1,12 @@
 %lang starknet
-from contracts.main import proposals, propose
+from contracts.proposals import proposals, propose
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from tests.constants import (
     CALLER_ADDRESS
 )
 
 @view
-func test_propose{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+func test_should_be_able_to_propose{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
     %{ stop_prank_callable = start_prank(ids.CALLER_ADDRESS) %}
     let (result_before) = proposals.read(account=CALLER_ADDRESS)
     assert result_before = 0

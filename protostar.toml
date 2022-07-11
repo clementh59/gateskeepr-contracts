@@ -6,5 +6,8 @@ libs_path = "lib"
 
 ["protostar.contracts"]
 proposals = [
-    "./contracts/proposals.cairo",
+    "./contracts/Proposals.cairo",
+]
+artifacts = [
+    "./contracts/Artifacts.cairo",
 ]
