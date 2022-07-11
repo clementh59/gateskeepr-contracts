@@ -1,8 +1,8 @@
 build:
 	protostar build --cairo-path ./lib/cairo_contracts/src
 
-deploy:
-	protostar deploy ./build/main.json --network alpha-goerli
+deploy_proposals:
+	protostar deploy ./build/proposals.json --network alpha-goerli
 
 test:
 	protostar test ./tests --cairo-path ./lib/cairo_contracts/src
