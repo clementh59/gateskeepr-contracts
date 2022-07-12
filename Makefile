@@ -7,6 +7,9 @@ deploy_proposals:
 test:
 	protostar test ./tests --cairo-path ./lib/cairo_contracts/src
 
+testArtifacts:
+	protostar test ./tests/integration/test_artifacts.cairo --cairo-path ./lib/cairo_contracts/src
+
 clean:
 	rm -rf ./build
 
