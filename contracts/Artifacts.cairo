@@ -4,12 +4,36 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin, SignatureBuiltin
-from starkware.cairo.common.uint256 import Uint256
+from starkware.cairo.common.uint256 import (
+    Uint256,
+    uint256_add
+)
 
 from openzeppelin.token.erc721.library import ERC721
 from openzeppelin.introspection.ERC165 import ERC165
 
 from openzeppelin.access.ownable import Ownable
+
+from contracts.utils.constants import (
+    STEP_BEFORE,
+    STEP_WHITELIST_SALE,
+    STEP_PUBLIC_SALE,
+    STEP_SOLD_OUT
+)
+
+#
+# Storage
+#
+
+# Minting step
+@storage_var
+func step_() -> (res : felt):
+end
+
+# keep in mind the last token id to auto increment when minting
+@storage_var
+func lastTokenId_() -> (tokenId : Uint256):
+end
 
 #
 # Constructor
@@ -22,17 +46,28 @@ func constructor{
         range_check_ptr
     }(
         name: felt,
-        symbol: felt,
-        owner: felt,
+        symbol: felt, 
+        owner: felt
     ):
     ERC721.initializer(name, symbol)
     Ownable.initializer(owner)
+    lastTokenId_.write(value=Uint256(1,0))
     return ()
 end
 
 #
 # Getters
 #
+
+@view
+func mintingStep{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }() -> (step: felt):
+    let (step) = step_.read()
+    return (step)
+end
 
 @view
 func supportsInterface{
@@ -124,9 +159,32 @@ func owner{
     return (owner)
 end
 
+@view
+func nextTokenId{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }() -> (tokenId: Uint256):
+    let (lastTokenId : Uint256) = lastTokenId_.read()
+    let one_as_uint = Uint256(1, 0)
+    let (tokenId : Uint256, _) = uint256_add(lastTokenId, one_as_uint)
+    return (tokenId)
+end
+
 #
 # Externals
 #
+
+@external
+func setMintingStep{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(step: felt):
+    Ownable.assert_only_owner()
+    step_.write(value=step)
+    return ()
+end
 
 @external
 func approve{
@@ -183,8 +241,37 @@ func mint{
         pedersen_ptr: HashBuiltin*,
         syscall_ptr: felt*,
         range_check_ptr
-    }(to: felt, tokenId: Uint256):
+    }(to: felt):
+
+    alloc_locals
+    
+    let (step) = step_.read()
+    let (tokenId : Uint256) = nextTokenId()
+
+    tempvar syscall_ptr = syscall_ptr
+    tempvar pedersen_ptr = pedersen_ptr
+    tempvar range_check_ptr = range_check_ptr
+
+    if step == STEP_BEFORE:
+        Ownable.assert_only_owner()
+        # todo
+    else:
+    end
+    if step == STEP_WHITELIST_SALE:
+        # todo
+    else:
+    end
+    if step == STEP_PUBLIC_SALE:
+        # todo
+    else:
+    end
+    if step == STEP_SOLD_OUT:
+        # todo
+    else:
+    end
+
     ERC721._mint(to, tokenId)
+    lastTokenId_.write(value=tokenId)
     return ()
 end
 

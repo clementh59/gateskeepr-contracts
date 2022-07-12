@@ -7,6 +7,9 @@ namespace IArtifacts:
     func balanceOf(owner: felt) -> (balance: Uint256):
     end
 
+    func owner() -> (owner: felt):    
+    end
+
     func ownerOf(tokenId: Uint256) -> (owner: felt):
     end
 
@@ -22,7 +25,7 @@ namespace IArtifacts:
     func transferFrom(from_: felt, to: felt, tokenId: Uint256):
     end
 
-    func mint(to: felt, tokenId: Uint256):
+    func mint(to: felt):
     end
 
     func approve(approved: felt, tokenId: Uint256):
@@ -38,5 +41,11 @@ namespace IArtifacts:
     end
 
     func tokenURI(tokenId: Uint256) -> (tokenURI: felt):
+    end
+
+    func setMintingStep(step: felt):
+    end
+
+    func nextTokenId() -> (tokenId: Uint256):
     end
 end

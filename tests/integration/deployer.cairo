@@ -22,12 +22,23 @@ namespace test_integration:
 
         %{
             ids.artifact_address = deploy_contract(
-            "./contracts/artifacts.cairo",
+            "./contracts/Artifacts.cairo",
             # name, symbol, owner
             [ids.ARTIFACTS_NAME, ids.ARTIFACTS_SYMBOL, ids.ADMIN]).contract_address
         %}
 
         # Replace mocks with deployed contract addresses here
+        let deployed_contracts = DeployedContracts(
+            artifact_address=artifact_address,
+            proposals_address=0x123
+        )
+        return (deployed_contracts)
+    end
+
+    func get_deployed_contracts_from_context() -> (deployed_contracts : DeployedContracts):
+        tempvar artifact_address
+        %{ ids.artifact_address = context.artifact_address %}
+
         let deployed_contracts = DeployedContracts(
             artifact_address=artifact_address,
             proposals_address=0x123
