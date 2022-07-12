@@ -25,7 +25,7 @@ namespace IArtifacts:
     func transferFrom(from_: felt, to: felt, tokenId: Uint256):
     end
 
-    func mint(to: felt):
+    func mint(to: felt, amount: felt):
     end
 
     func approve(approved: felt, tokenId: Uint256):

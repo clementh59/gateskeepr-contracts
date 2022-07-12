@@ -8,6 +8,10 @@ from starkware.cairo.common.uint256 import (
     Uint256,
     uint256_add
 )
+from starkware.cairo.common.math import (
+    assert_nn_le,
+    assert_not_zero
+)
 
 from openzeppelin.token.erc721.library import ERC721
 from openzeppelin.introspection.ERC165 import ERC165
@@ -18,7 +22,8 @@ from contracts.utils.constants import (
     STEP_BEFORE,
     STEP_WHITELIST_SALE,
     STEP_PUBLIC_SALE,
-    STEP_SOLD_OUT
+    STEP_SOLD_OUT,
+    MAX_MINT_PER_ROW
 )
 
 #
@@ -241,37 +246,27 @@ func mint{
         pedersen_ptr: HashBuiltin*,
         syscall_ptr: felt*,
         range_check_ptr
-    }(to: felt):
+    }(to: felt, amount: felt):
 
     alloc_locals
     
     let (step) = step_.read()
-    let (tokenId : Uint256) = nextTokenId()
 
     tempvar syscall_ptr = syscall_ptr
     tempvar pedersen_ptr = pedersen_ptr
     tempvar range_check_ptr = range_check_ptr
 
-    if step == STEP_BEFORE:
-        Ownable.assert_only_owner()
-        # todo
-    else:
-    end
-    if step == STEP_WHITELIST_SALE:
-        # todo
-    else:
-    end
-    if step == STEP_PUBLIC_SALE:
-        # todo
-    else:
-    end
-    if step == STEP_SOLD_OUT:
-        # todo
-    else:
-    end
+    _fill_conditions_in_case_of_STEP_BEFORE(step)
+    _fill_conditions_in_case_of_STEP_WHITELIST(step)
+    _fill_conditions_in_case_of_STEP_PUBLIC(step)
+    _fill_conditions_in_case_of_STEP_SOLD_OUT(step)
 
-    ERC721._mint(to, tokenId)
-    lastTokenId_.write(value=tokenId)
+    with_attr error_message("amount should be between 1 and MAX_MINT_PER_ROW"):
+        assert_nn_le(amount, MAX_MINT_PER_ROW)
+        assert_not_zero(amount)
+    end
+    
+    _mint(to, amount)
     return ()
 end
 
@@ -323,5 +318,80 @@ func renounceOwnership{
         range_check_ptr
     }():
     Ownable.renounce_ownership()
+    return ()
+end
+
+#
+# Internal functions
+#
+func _mint{
+        syscall_ptr: felt*,
+        pedersen_ptr: HashBuiltin*,
+        range_check_ptr
+    }(to: felt, amount: felt):
+
+    if amount == 0:
+        return ()
+    end
+
+    let (tokenId : Uint256) = nextTokenId()
+
+    ERC721._mint(to, tokenId)
+    lastTokenId_.write(value=tokenId)
+
+    _mint(to, amount - 1)
+    return ()
+end
+
+func _fill_conditions_in_case_of_STEP_SOLD_OUT(step: felt):
+    if step == STEP_SOLD_OUT:
+        # todo
+    end
+    return ()
+end
+
+func _fill_conditions_in_case_of_STEP_PUBLIC(step: felt):
+    if step == STEP_PUBLIC_SALE:
+        # todo
+    end
+    return ()
+end
+
+func _fill_conditions_in_case_of_STEP_WHITELIST{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(step: felt):
+    alloc_locals
+    if step == STEP_WHITELIST_SALE:
+        Ownable.assert_only_owner()
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+        # todo
+    else:
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    end
+    return ()
+end
+
+func _fill_conditions_in_case_of_STEP_BEFORE{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(step: felt):
+    alloc_locals
+    if step == STEP_BEFORE:
+        Ownable.assert_only_owner()
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    else:
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    end
     return ()
 end
