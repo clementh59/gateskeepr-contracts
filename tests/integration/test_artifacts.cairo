@@ -5,13 +5,14 @@ from tests.integration.deployer import (test_integration, DeployedContracts)
 from tests.constants import (
     CALLER_ADDRESS,
     ADMIN,
+    METADATA_HASH_STATE
 )
 from contracts.utils.constants import (
     STEP_BEFORE,
     STEP_WHITELIST_SALE,
     STEP_PUBLIC_SALE,
     STEP_SOLD_OUT,
-    MAX_MINT_PER_ROW
+    MAX_MINT_PER_ROW,
 )
 from contracts.interfaces.IArtifacts import IArtifacts
 from starkware.cairo.common.uint256 import (
@@ -29,19 +30,14 @@ func __setup__{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*
 end
 
 @external
-func test_should_not_be_able_to_change_step_as_a_normal_user{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+func test_should_set_the_original_hash_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
 
     let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
 
-    %{ stop_prank_callable = start_prank(caller_address=ids.CALLER_ADDRESS, target_contract_address=ids.deployed_contracts.artifact_address)%}
+    let (hash) = IArtifacts.metadataHashState(contract_address=deployed_contracts.artifact_address)
 
-    %{ expect_revert("TRANSACTION_FAILED") %}
-    IArtifacts.setMintingStep(
-        contract_address=deployed_contracts.artifact_address,
-        step=1
-    )
-
-    %{ stop_prank_callable() %}
+    assert hash = METADATA_HASH_STATE
+    
     return ()
 end
 
@@ -55,6 +51,23 @@ func test_admin_and_owner_should_be_equal{syscall_ptr : felt*, range_check_ptr, 
 
     assert owner = ADMIN
     
+    return ()
+end
+
+@external
+func test_should_not_be_able_to_change_step_as_a_normal_user{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+
+    %{ stop_prank_callable = start_prank(caller_address=ids.CALLER_ADDRESS, target_contract_address=ids.deployed_contracts.artifact_address)%}
+
+    %{ expect_revert("TRANSACTION_FAILED") %}
+    IArtifacts.setMintingStep(
+        contract_address=deployed_contracts.artifact_address,
+        step=1
+    )
+
+    %{ stop_prank_callable() %}
     return ()
 end
 

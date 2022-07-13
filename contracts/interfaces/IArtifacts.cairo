@@ -43,6 +43,9 @@ namespace IArtifacts:
     func tokenURI(tokenId: Uint256) -> (tokenURI: felt):
     end
 
+    func metadataHashState() -> (hash: felt):
+    end
+
     func setMintingStep(step: felt):
     end
 

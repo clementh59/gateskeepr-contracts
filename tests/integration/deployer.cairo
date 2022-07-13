@@ -1,7 +1,8 @@
 from tests.constants import (
     ADMIN,
     ARTIFACTS_NAME,
-    ARTIFACTS_SYMBOL
+    ARTIFACTS_SYMBOL,
+    METADATA_HASH_STATE
 )
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
@@ -24,7 +25,7 @@ namespace test_integration:
             ids.artifact_address = deploy_contract(
             "./contracts/Artifacts.cairo",
             # name, symbol, owner
-            [ids.ARTIFACTS_NAME, ids.ARTIFACTS_SYMBOL, ids.ADMIN]).contract_address
+            [ids.ARTIFACTS_NAME, ids.ARTIFACTS_SYMBOL, ids.ADMIN, ids.METADATA_HASH_STATE]).contract_address
         %}
 
         # Replace mocks with deployed contract addresses here

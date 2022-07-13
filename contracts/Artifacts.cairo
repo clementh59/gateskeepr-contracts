@@ -40,6 +40,10 @@ end
 func lastTokenId_() -> (tokenId : Uint256):
 end
 
+@storage_var
+func metadataHashState_() -> (hash : felt):
+end
+
 #
 # Constructor
 #
@@ -52,17 +56,29 @@ func constructor{
     }(
         name: felt,
         symbol: felt, 
-        owner: felt
+        owner: felt,
+        hashState: felt
     ):
     ERC721.initializer(name, symbol)
     Ownable.initializer(owner)
     lastTokenId_.write(value=Uint256(1,0))
+    metadataHashState_.write(value=hashState)
     return ()
 end
 
 #
 # Getters
 #
+
+@view
+func metadataHashState{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }() -> (hash: felt):
+    let (hash) = metadataHashState_.read()
+    return (hash)
+end
 
 @view
 func mintingStep{
