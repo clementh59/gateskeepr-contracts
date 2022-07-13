@@ -40,3 +40,5 @@ Then, you just need to run this command:
 make deploy_proposal
 make deploy_artifacts
 ```
+
+Once the contracts are deployed, and the mint is finished, you'll need to register, in the contract, the token metadata.

@@ -51,4 +51,10 @@ namespace IArtifacts:
 
     func nextTokenId() -> (tokenId: Uint256):
     end
+
+    func getItemType(tokenId: Uint256) -> (res: felt):
+    end
+
+    func setTokensMetadata(values_len : felt, values : felt*):
+    end
 end

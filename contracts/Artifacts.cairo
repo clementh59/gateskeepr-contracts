@@ -44,6 +44,10 @@ end
 func metadataHashState_() -> (hash : felt):
 end
 
+@storage_var
+func tokenMetadata_(tokenId: Uint256) -> (metadata : felt):
+end
+
 #
 # Constructor
 #
@@ -192,9 +196,30 @@ func nextTokenId{
     return (tokenId)
 end
 
+@view
+func getItemType{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }(tokenId: Uint256) -> (res: felt):
+    let (metadata) = tokenMetadata_.read(tokenId)
+    return (metadata)
+end
+
 #
 # Externals
 #
+
+@external
+func setTokensMetadata{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(values_len : felt, values : felt*):
+    Ownable.assert_only_owner()
+    _setTokensMetadata(values_len, values, 1)
+    return ()
+end
 
 @external
 func setMintingStep{
@@ -409,5 +434,21 @@ func _fill_conditions_in_case_of_STEP_BEFORE{
         tempvar pedersen_ptr = pedersen_ptr
         tempvar range_check_ptr = range_check_ptr
     end
+    return ()
+end
+
+func _setTokensMetadata{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(values_len : felt, values : felt*, index: felt):
+    
+    if values_len == 0:
+        return ()
+    end
+
+    let tokenId: Uint256 = Uint256(index, 0)
+    tokenMetadata_.write(tokenId = tokenId, value=[values])
+    _setTokensMetadata(values_len=values_len - 1, values=values + 1, index = index + 1)
     return ()
 end

@@ -1,5 +1,6 @@
 %lang starknet
 
+from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from tests.integration.deployer import (test_integration, DeployedContracts)
 from tests.constants import (
@@ -258,6 +259,56 @@ func test_should_not_be_able_to_provide_more_than_MAX_MINT_PER_ROW_as_amount_whe
     %{ expect_revert(error_message="amount should be between 1 and MAX_MINT_PER_ROW") %}
     IArtifacts.mint(contract_address=deployed_contracts.artifact_address, to=CALLER_ADDRESS, amount=MAX_MINT_PER_ROW+1)
     
+    return ()
+end
+
+@external
+func test_should_be_able_to_set_tokens_metadata_as_ADMIN{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    alloc_locals
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+    %{ stop_prank_callable = start_prank(caller_address=ids.ADMIN, target_contract_address=ids.deployed_contracts.artifact_address)%}
+
+    let (local metadata : felt*) = alloc()
+    assert metadata[0] = 1
+    assert metadata[1] = 3
+    assert metadata[2] = 7
+    assert metadata[3] = 12
+
+    IArtifacts.setTokensMetadata(
+        contract_address=deployed_contracts.artifact_address,
+        values_len=4,
+        values=metadata
+    )
+
+    let (type1) = IArtifacts.getItemType(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId=Uint256(1,0)
+    )
+
+    assert type1 = 1
+
+    let (type2) = IArtifacts.getItemType(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId=Uint256(2,0)
+    )
+
+    assert type2 = 3
+
+    let (type3) = IArtifacts.getItemType(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId=Uint256(3,0)
+    )
+
+    assert type3 = 7
+
+    let (type4) = IArtifacts.getItemType(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId=Uint256(4,0)
+    )
+
+    assert type4 = 12
+
+    %{ stop_prank_callable() %}
     return ()
 end
 
