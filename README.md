@@ -26,7 +26,7 @@ python3 -i utils/utils.py
 
 ## Deploying contract
 
-First, you'll need to generate the hash of your metadata file. This is in order to prove that you didn't change the metadatas after the mint, since there is a reveal of the NFTs once every items have been minted.
+First, you'll need to generate the hash of your metadata file. This is in order to prove that you didn't change the metadata file after the mint, since there is a reveal of the NFTs once every items have been minted.
 
 Here is an example of metadata file:
 ```json
