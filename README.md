@@ -31,3 +31,8 @@ Then, you just need to run this command:
 make deploy_proposal
 make deploy_artifacts
 ```
+
+## VRF
+
+For now, the vrf used when minting is a pseudo random one.
+Here is the original repo: https://github.com/milancermak/xoroshiro-cairo
