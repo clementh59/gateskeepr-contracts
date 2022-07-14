@@ -5,8 +5,7 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from tests.integration.deployer import (test_integration, DeployedContracts)
 from tests.constants import (
     CALLER_ADDRESS,
-    ADMIN,
-    METADATA_HASH_STATE
+    ADMIN
 )
 from contracts.utils.constants import (
     STEP_BEFORE,
@@ -20,25 +19,16 @@ from starkware.cairo.common.uint256 import (
     Uint256, 
     uint256_add
 )
+from contracts.interfaces.IVRF import IVRF
 
 @external
 func __setup__{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
     let (deployed_contracts : DeployedContracts) = test_integration.deploy_contracts()
     let artifact_address = deployed_contracts.artifact_address
+    let vrf_address = deployed_contracts.vrf_address
 
     %{ context.artifact_address = ids.artifact_address %}
-    return ()
-end
-
-@external
-func test_should_set_the_original_hash_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
-
-    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
-
-    let (hash) = IArtifacts.metadataHashState(contract_address=deployed_contracts.artifact_address)
-
-    assert hash = METADATA_HASH_STATE
-    
+    %{ context.vrf_address = ids.vrf_address %}
     return ()
 end
 
@@ -74,9 +64,14 @@ end
 
 @external
 func test_should_be_able_to_change_step{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    alloc_locals
     let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
 
     changeStep(deployed_contracts.artifact_address, 1)
+
+    let (step) = IArtifacts.mintingStep(deployed_contracts.artifact_address)
+
+    assert step = 1
     
     return ()
 end
@@ -259,56 +254,6 @@ func test_should_not_be_able_to_provide_more_than_MAX_MINT_PER_ROW_as_amount_whe
     %{ expect_revert(error_message="amount should be between 1 and MAX_MINT_PER_ROW") %}
     IArtifacts.mint(contract_address=deployed_contracts.artifact_address, to=CALLER_ADDRESS, amount=MAX_MINT_PER_ROW+1)
     
-    return ()
-end
-
-@external
-func test_should_be_able_to_set_tokens_metadata_as_ADMIN{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
-    alloc_locals
-    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
-    %{ stop_prank_callable = start_prank(caller_address=ids.ADMIN, target_contract_address=ids.deployed_contracts.artifact_address)%}
-
-    let (local metadata : felt*) = alloc()
-    assert metadata[0] = 1
-    assert metadata[1] = 3
-    assert metadata[2] = 7
-    assert metadata[3] = 12
-
-    IArtifacts.setTokensMetadata(
-        contract_address=deployed_contracts.artifact_address,
-        values_len=4,
-        values=metadata
-    )
-
-    let (type1) = IArtifacts.getItemType(
-        contract_address=deployed_contracts.artifact_address,
-        tokenId=Uint256(1,0)
-    )
-
-    assert type1 = 1
-
-    let (type2) = IArtifacts.getItemType(
-        contract_address=deployed_contracts.artifact_address,
-        tokenId=Uint256(2,0)
-    )
-
-    assert type2 = 3
-
-    let (type3) = IArtifacts.getItemType(
-        contract_address=deployed_contracts.artifact_address,
-        tokenId=Uint256(3,0)
-    )
-
-    assert type3 = 7
-
-    let (type4) = IArtifacts.getItemType(
-        contract_address=deployed_contracts.artifact_address,
-        tokenId=Uint256(4,0)
-    )
-
-    assert type4 = 12
-
-    %{ stop_prank_callable() %}
     return ()
 end
 

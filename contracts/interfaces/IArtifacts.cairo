@@ -52,6 +52,9 @@ namespace IArtifacts:
     func nextTokenId() -> (tokenId: Uint256):
     end
 
+    func mintingStep() -> (step: felt):
+    end
+
     func getItemType(tokenId: Uint256) -> (res: felt):
     end
 

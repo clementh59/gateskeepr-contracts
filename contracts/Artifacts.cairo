@@ -26,6 +26,8 @@ from contracts.utils.constants import (
     MAX_MINT_PER_ROW
 )
 
+from contracts.interfaces.IVRF import IVRF
+
 #
 # Storage
 #
@@ -41,11 +43,11 @@ func lastTokenId_() -> (tokenId : Uint256):
 end
 
 @storage_var
-func metadataHashState_() -> (hash : felt):
+func tokenMetadata_(tokenId: Uint256) -> (metadata : felt):
 end
 
 @storage_var
-func tokenMetadata_(tokenId: Uint256) -> (metadata : felt):
+func vrfAddress_() -> (address : felt):
 end
 
 #
@@ -61,28 +63,18 @@ func constructor{
         name: felt,
         symbol: felt, 
         owner: felt,
-        hashState: felt
+        vrfAddress: felt
     ):
     ERC721.initializer(name, symbol)
     Ownable.initializer(owner)
     lastTokenId_.write(value=Uint256(1,0))
-    metadataHashState_.write(value=hashState)
+    vrfAddress_.write(value=vrfAddress)
     return ()
 end
 
 #
 # Getters
 #
-
-@view
-func metadataHashState{
-        syscall_ptr : felt*,
-        pedersen_ptr : HashBuiltin*,
-        range_check_ptr
-    }() -> (hash: felt):
-    let (hash) = metadataHashState_.read()
-    return (hash)
-end
 
 @view
 func mintingStep{
@@ -376,6 +368,8 @@ func _mint{
     end
 
     let (tokenId : Uint256) = nextTokenId()
+    let (vrfAddress) = vrfAddress_.read()
+    let (random) = IVRF.generateVRF(contract_address=vrfAddress)
 
     ERC721._mint(to, tokenId)
     lastTokenId_.write(value=tokenId)
