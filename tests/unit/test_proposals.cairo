@@ -5,7 +5,7 @@ from tests.constants import (
     CALLER_ADDRESS
 )
 
-#@external
+@external
 func test_should_be_able_to_propose{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
     %{ stop_prank_callable = start_prank(ids.CALLER_ADDRESS) %}
     let (result_before) = proposals.read(account=CALLER_ADDRESS)
