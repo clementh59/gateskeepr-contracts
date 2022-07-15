@@ -402,17 +402,8 @@ func _getAvailableTokenAtIndex{
     alloc_locals
 
     let (valAtIndex) = availableTokens_.read(index=indexToUse)
-    tempvar result = 0
-
-    if valAtIndex == 0:
-        # This means the index itself is still an available token
-        result = indexToUse
-    else:
-        # This means the index itself is not an available token, but the val at that index is.
-        result = valAtIndex
-    end
-
     let lastIndex = numAvailable - 1
+
     if indexToUse != lastIndex:
         let (lastValInArray) = availableTokens_.read(index=lastIndex)
         tempvar syscall_ptr = syscall_ptr
@@ -431,7 +422,12 @@ func _getAvailableTokenAtIndex{
         tempvar range_check_ptr = range_check_ptr
     end
 
-    return (result)
+    if valAtIndex == 0:
+        # This means the index itself is still an available token
+        return (indexToUse)
+    end
+
+    return (valAtIndex)
 end
 
 func _fill_conditions_in_case_of_STEP_SOLD_OUT(step: felt):
