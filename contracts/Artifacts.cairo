@@ -10,7 +10,8 @@ from starkware.cairo.common.uint256 import (
 )
 from starkware.cairo.common.math import (
     assert_nn_le,
-    assert_not_zero
+    assert_not_zero,
+    unsigned_div_rem
 )
 
 from openzeppelin.token.erc721.library import ERC721
@@ -23,7 +24,8 @@ from contracts.utils.constants import (
     STEP_WHITELIST_SALE,
     STEP_PUBLIC_SALE,
     STEP_SOLD_OUT,
-    MAX_MINT_PER_ROW
+    MAX_MINT_PER_ROW,
+    MAX_SUPPLY
 )
 
 from contracts.interfaces.IVRF import IVRF
@@ -48,6 +50,14 @@ end
 
 @storage_var
 func vrfAddress_() -> (address : felt):
+end
+
+@storage_var
+func availableTokens_(index: felt) -> (tokenId: felt):
+end
+
+@storage_var
+func numAvailableToken_() -> (num: felt):
 end
 
 #
@@ -362,20 +372,66 @@ func _mint{
         pedersen_ptr: HashBuiltin*,
         range_check_ptr
     }(to: felt, amount: felt):
+    alloc_locals
 
     if amount == 0:
         return ()
     end
 
-    let (tokenId : Uint256) = nextTokenId()
     let (vrfAddress) = vrfAddress_.read()
     let (random) = IVRF.generateVRF(contract_address=vrfAddress)
-
+    let (numAvailableToken) = numAvailableToken_.read()
+    let (_, remainder) = unsigned_div_rem(random, MAX_SUPPLY)
+    let (tokenIdFelt) = _getAvailableTokenAtIndex(remainder, numAvailableToken)
+    let tokenId: Uint256 = Uint256(tokenIdFelt, 0)
     ERC721._mint(to, tokenId)
     lastTokenId_.write(value=tokenId)
 
+    numAvailableToken_.write(value=numAvailableToken-1)
+
     _mint(to, amount - 1)
     return ()
+end
+
+# Implements https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle.
+func _getAvailableTokenAtIndex{
+        syscall_ptr: felt*,
+        pedersen_ptr: HashBuiltin*,
+        range_check_ptr
+    }(indexToUse: felt, numAvailable: felt) -> (tokenId: felt):
+    alloc_locals
+
+    let (valAtIndex) = availableTokens_.read(index=indexToUse)
+    tempvar result = 0
+
+    if valAtIndex == 0:
+        # This means the index itself is still an available token
+        result = indexToUse
+    else:
+        # This means the index itself is not an available token, but the val at that index is.
+        result = valAtIndex
+    end
+
+    let lastIndex = numAvailable - 1
+    if indexToUse != lastIndex:
+        let (lastValInArray) = availableTokens_.read(index=lastIndex)
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+        if lastValInArray == 0:
+            # This means the index itself is still an available token
+            availableTokens_.write(index=indexToUse, value=lastIndex)
+        else:
+            # This means the index itself is not an available token, but the val at that index is.
+            availableTokens_.write(index=indexToUse, value=lastValInArray)
+        end
+    else:
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    end
+
+    return (result)
 end
 
 func _fill_conditions_in_case_of_STEP_SOLD_OUT(step: felt):

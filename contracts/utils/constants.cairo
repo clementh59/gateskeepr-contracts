@@ -4,3 +4,5 @@ const STEP_PUBLIC_SALE = 2
 const STEP_SOLD_OUT = 3
 
 const MAX_MINT_PER_ROW = 10
+
+const MAX_SUPPLY = 100
