@@ -30,9 +30,15 @@ from contracts.utils.constants import (
 )
 
 from contracts.utils.ArtifactTypeUtils import (
-    buildChuckyFromData,
     TYPES,
     ChuckyArtifact,
+    RoomArtifact,
+    OrbArtifact,
+    CataclystArtifact,
+    HackEyeArtifact,
+    CopycatArtifact,
+    FreeProposalsArtifact,
+    GodModeArtifact
 )
 
 from contracts.interfaces.IArtifacts import IArtifacts
@@ -87,16 +93,152 @@ func test_should_init_chucky_artifacts_correctly{syscall_ptr : felt*, range_chec
 
     let (chucky1: ChuckyArtifact) = IArtifacts.getChuckyArtifact(
         contract_address=deployed_contracts.artifact_address,
-        tokenId = Uint256(1,0)
+        tokenId = Uint256(TD.CHUCKY_T1,0)
     )
 
     let (chucky2: ChuckyArtifact) = IArtifacts.getChuckyArtifact(
         contract_address=deployed_contracts.artifact_address,
-        tokenId = Uint256(4,0)
+        tokenId = Uint256(TD.CHUCKY_T2,0)
     )
 
     assert chucky1.room_number = TD.CHUCKY_T1_ROOM
     assert chucky2.room_number = TD.CHUCKY_T2_ROOM
+    
+    return ()
+end
+
+@external
+func test_should_init_room_artifacts_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+
+    let (t1: RoomArtifact) = IArtifacts.getRoomArtifact(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(TD.ROOM_ARTIFACT_T1,0)
+    )
+
+    let (t2: RoomArtifact) = IArtifacts.getRoomArtifact(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(TD.ROOM_ARTIFACT_T2,0)
+    )
+
+    assert t1.room_number = TD.ROOM_T1_ROOM
+    assert t1.rarity = TD.ROOM_T1_RARITY
+    assert t2.room_number = TD.ROOM_T2_ROOM
+    assert t2.rarity = TD.ROOM_T2_RARITY
+    
+    return ()
+end
+
+@external
+func test_should_init_orb_artifacts_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+
+    let (t1: OrbArtifact) = IArtifacts.getOrbArtifact(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(TD.ORB_T1,0)
+    )
+
+    let (t2: OrbArtifact) = IArtifacts.getOrbArtifact(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(TD.ORB_T2,0)
+    )
+
+    assert t1.room_number = TD.ORB_T1_ROOM
+    assert t1.rarity = TD.ORB_T1_RARITY
+    assert t2.room_number = TD.ORB_T2_ROOM
+    assert t2.rarity = TD.ORB_T2_RARITY
+    
+    return ()
+end
+
+@external
+func test_should_init_cataclyst_artifacts_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+
+    let (t1: CataclystArtifact) = IArtifacts.getCataclystArtifact(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(TD.CATACLYST_T1,0)
+    )
+
+    assert t1.room_number = TD.CATACLYST_T1_ROOM
+    
+    return ()
+end
+
+@external
+func test_should_init_hack_eye_artifacts_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+
+    let (t1: HackEyeArtifact) = IArtifacts.getHackEyeArtifact(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(TD.HACK_EYE_T1,0)
+    )
+
+    assert t1.room_number = TD.HACK_EYE_T1_ROOM
+    
+    return ()
+end
+
+@external
+func test_should_init_copycat_artifacts_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+
+    let (t1: CopycatArtifact) = IArtifacts.getCopycatArtifact(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(TD.COPYCAT_T1,0)
+    )
+
+    let (t2: CopycatArtifact) = IArtifacts.getCopycatArtifact(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(TD.COPYCAT_T2,0)
+    )
+
+    assert t1.rarity = TD.COPYCAT_T1_RARITY
+    assert t1.knowRoom = TD.COPYCAT_T1_KNOWN_ROOM
+    assert t2.rarity = TD.COPYCAT_T2_RARITY
+    assert t2.knowRoom = TD.COPYCAT_T2_KNOWN_ROOM
+    
+    return ()
+end
+
+@external
+func test_should_init_fp_artifacts_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+
+    let (t1: FreeProposalsArtifact) = IArtifacts.getFreeProposalArtifact(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(TD.FP_T1,0)
+    )
+
+    let (t2: FreeProposalsArtifact) = IArtifacts.getFreeProposalArtifact(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(TD.FP_T2,0)
+    )
+
+    assert t1.number = TD.FP_T1_NUMBER
+    assert t1.room_number = TD.FP_T1_ROOM
+    assert t2.number = TD.FP_T2_NUMBER
+    assert t2.room_number = TD.FP_T2_ROOM
+    
+    return ()
+end
+
+@external
+func test_should_init_god_mode_artifacts_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+
+    let (t1: GodModeArtifact) = IArtifacts.getGodModeArtifact(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(TD.GODMODE_T1,0)
+    )
+
+    let (t2: GodModeArtifact) = IArtifacts.getGodModeArtifact(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(TD.GODMODE_T2,0)
+    )
+
+    assert t1.room_number = TD.GODMODE_T1_ROOM
+    assert t2.room_number = TD.GODMODE_T2_ROOM
     
     return ()
 end

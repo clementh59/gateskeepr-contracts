@@ -23,7 +23,7 @@ namespace TYPES:
     const ORB_OF_OSUVOX = 0
     const CATACLYST = 1
     const EXTRA_PASS = 2
-    const HACH_EYE = 3
+    const HACK_EYE = 3
     const COPYCAT = 4
     const VIP_PASS = 5
     const FREE_PROPOSALS = 6
@@ -44,7 +44,8 @@ end
 #
 
 # Some artifacts don't have a type because they don't have any properties
-# -> Extra Pass (you can make a proposal in every room even though there is a )
+# -> Extra Pass (you can make a proposal in every room even though there is an orb activated)
+# -> Happy Hour (50% off on your proposals)
 
 # Steal X% of proposal fees for X minutes
 struct ChuckyArtifact:
@@ -60,6 +61,7 @@ end
 # block all the proposals of a given room, except for me (and my guild)
 struct OrbArtifact:
     member room_number : felt
+    # how many time?
     member rarity : felt
 end
 
@@ -91,7 +93,7 @@ end
 
 # God mode
 struct GodModeArtifact:
-    # In which room do I have the god mode
+    # In which room do I have the god mode?
     member room_number: felt
 end
 

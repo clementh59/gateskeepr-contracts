@@ -46,7 +46,30 @@ namespace test_integration:
             # chuckyInfo_len
             ids.TD.NUMBER_OF_CHUCKY * 2,
             # chuckyInfo
-            ids.TD.CHUCKY_T1, ids.TD.CHUCKY_T1_ROOM, ids.TD.CHUCKY_T2, ids.TD.CHUCKY_T2_ROOM
+            ids.TD.CHUCKY_T1, ids.TD.CHUCKY_T1_ROOM, ids.TD.CHUCKY_T2, ids.TD.CHUCKY_T2_ROOM,
+            # roomArtifactData_len
+            ids.TD.NUMBER_OF_ROOM_ARTIFACT * 3,
+            # roomArtifactData
+            ids.TD.ROOM_ARTIFACT_T1, ids.TD.ROOM_T1_ROOM, ids.TD.ROOM_T1_RARITY, ids.TD.ROOM_ARTIFACT_T2, ids.TD.ROOM_T2_ROOM, ids.TD.ROOM_T2_RARITY, 
+            # orbData_len
+            ids.TD.NUMBER_OF_ORB_ARTIFACT * 3,
+            # orbData
+            ids.TD.ORB_T1, ids.TD.ORB_T1_ROOM, ids.TD.ORB_T1_RARITY, ids.TD.ORB_T2, ids.TD.ORB_T2_ROOM, ids.TD.ORB_T2_RARITY,
+            # cataclyst
+            ids.TD.NUMBER_OF_CATACLYST_ARTIFACT * 2,
+            ids.TD.CATACLYST_T1, ids.TD.CATACLYST_T1_ROOM,
+            # hack eye
+            ids.TD.NUMBER_OF_HACK_EYE_ARTIFACT * 2,
+            ids.TD.HACK_EYE_T1, ids.TD.HACK_EYE_T1_ROOM,
+            # copycat
+            ids.TD.NUMBER_OF_COPYCAT_ARTIFACT * 3,
+            ids.TD.COPYCAT_T1, ids.TD.COPYCAT_T1_RARITY, ids.TD.COPYCAT_T1_KNOWN_ROOM, ids.TD.COPYCAT_T2, ids.TD.COPYCAT_T2_RARITY, ids.TD.COPYCAT_T2_KNOWN_ROOM,
+            # fp
+            ids.TD.NUMBER_OF_FP_ARTIFACT * 3,
+            ids.TD.FP_T1, ids.TD.FP_T1_ROOM, ids.TD.FP_T1_NUMBER, ids.TD.FP_T2, ids.TD.FP_T2_ROOM, ids.TD.FP_T2_NUMBER,
+            # god mode
+            ids.TD.NUMBER_OF_GODMODE_ARTIFACT * 2,
+            ids.TD.GODMODE_T1, ids.TD.GODMODE_T1_ROOM, ids.TD.GODMODE_T2, ids.TD.GODMODE_T2_ROOM,
             ]).contract_address
         %}
 

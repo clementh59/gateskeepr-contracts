@@ -29,8 +29,22 @@ from contracts.utils.constants import (
 
 from contracts.utils.ArtifactTypeUtils import (
     buildChuckyFromData,
+    buildRoomFromData,
+    buildOrbOfOsuvoxFromData,
+    buildCataclystFromData,
+    buildHackEyeFromData,
+    buildCopycatFromData,
+    buildFreeProposalsFromData,
+    buildGodModeFromData,
     TYPES,
     ChuckyArtifact,
+    RoomArtifact,
+    OrbArtifact,
+    CataclystArtifact,
+    HackEyeArtifact,
+    CopycatArtifact,
+    FreeProposalsArtifact,
+    GodModeArtifact
 )
 
 from contracts.interfaces.IVRF import IVRF
@@ -72,6 +86,34 @@ end
 func chuckyArtifact_(tokenId: Uint256) -> (type: ChuckyArtifact):
 end
 
+@storage_var
+func roomArtifact_(tokenId: Uint256) -> (type: RoomArtifact):
+end
+
+@storage_var
+func orbArtifact_(tokenId: Uint256) -> (type: OrbArtifact):
+end
+
+@storage_var
+func cataclystArtifact_(tokenId: Uint256) -> (type: CataclystArtifact):
+end
+
+@storage_var
+func hackEyeArtifact_(tokenId: Uint256) -> (type: HackEyeArtifact):
+end
+
+@storage_var
+func copycatArtifact_(tokenId: Uint256) -> (type: CopycatArtifact):
+end
+
+@storage_var
+func freeProposalsArtifact_(tokenId: Uint256) -> (type: FreeProposalsArtifact):
+end
+
+@storage_var
+func godModeArtifact_(tokenId: Uint256) -> (type: GodModeArtifact):
+end
+
 #
 # Constructor
 #
@@ -89,8 +131,14 @@ func constructor{
         maxSupply: felt,
         artifactsType_len: felt,
         artifactsType: felt*,
-        chuckyData_len: felt,
-        chuckyData: felt*,
+        chuckyData_len: felt, chuckyData: felt*,
+        roomArtifactData_len: felt, roomArtifactData: felt*,
+        orbData_len: felt, orbData: felt*,
+        cataclystData_len: felt, cataclystData: felt*,
+        hackEyeData_len: felt, hackEyeData: felt*,
+        copycatData_len: felt, copycatData: felt*,
+        freeProposalsData_len: felt, freeProposalsData: felt*,
+        godModeData_len: felt, godModeData: felt*,
     ):
     ERC721.initializer(name, symbol)
     Ownable.initializer(owner)
@@ -99,6 +147,13 @@ func constructor{
     maxSupply_.write(value=maxSupply)
     numAvailableToken_.write(value=maxSupply)
     _initChuckyData(chuckyData_len, chuckyData)
+    _initRoomArtifactData(roomArtifactData_len, roomArtifactData)
+    _initOrbData(orbData_len, orbData)
+    _initCataclystData(cataclystData_len, cataclystData)
+    _initHackEyeData(hackEyeData_len, hackEyeData)
+    _initCopycatData(copycatData_len, copycatData)
+    _initFreeProposalsData(freeProposalsData_len, freeProposalsData)
+    _initGodModeData(godModeData_len, godModeData)
     return ()
 end
 
@@ -233,6 +288,76 @@ func getChuckyArtifact{
         range_check_ptr
     }(tokenId: Uint256) -> (chucky: ChuckyArtifact):
     let (res) = chuckyArtifact_.read(tokenId=tokenId)
+    return (res)
+end
+
+@view 
+func getRoomArtifact{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }(tokenId: Uint256) -> (room: RoomArtifact):
+    let (res) = roomArtifact_.read(tokenId=tokenId)
+    return (res)
+end
+
+@view 
+func getOrbArtifact{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }(tokenId: Uint256) -> (orb: OrbArtifact):
+    let (res) = orbArtifact_.read(tokenId=tokenId)
+    return (res)
+end
+
+@view 
+func getCataclystArtifact{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }(tokenId: Uint256) -> (cataclyst: CataclystArtifact):
+    let (res) = cataclystArtifact_.read(tokenId=tokenId)
+    return (res)
+end
+
+@view 
+func getHackEyeArtifact{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }(tokenId: Uint256) -> (hackEye: HackEyeArtifact):
+    let (res) = hackEyeArtifact_.read(tokenId=tokenId)
+    return (res)
+end
+
+@view 
+func getCopycatArtifact{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }(tokenId: Uint256) -> (copycat: CopycatArtifact):
+    let (res) = copycatArtifact_.read(tokenId=tokenId)
+    return (res)
+end
+
+@view 
+func getFreeProposalArtifact{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }(tokenId: Uint256) -> (freeProposals: FreeProposalsArtifact):
+    let (res) = freeProposalsArtifact_.read(tokenId=tokenId)
+    return (res)
+end
+
+@view 
+func getGodModeArtifact{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }(tokenId: Uint256) -> (godMode: GodModeArtifact):
+    let (res) = godModeArtifact_.read(tokenId=tokenId)
     return (res)
 end
 
@@ -531,5 +656,124 @@ func _initChuckyData{
     chuckyArtifact_.write(tokenId=tokenId, value=value)
 
     _initChuckyData(chuckyData_len=chuckyData_len - 2, chuckyData=chuckyData + 2)
+    return ()
+end
+
+func _initRoomArtifactData{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(array_len: felt, array: felt*):
+    if array_len == 0:
+        return ()
+    end
+
+    let tokenId: Uint256 = Uint256([array], 0)
+    let (value) = buildRoomFromData([array + 1], [array + 2])
+    roomArtifact_.write(tokenId=tokenId, value=value)
+
+    _initRoomArtifactData(array_len=array_len - 3, array=array + 3)
+    return ()
+end
+
+func _initOrbData{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(array_len: felt, array: felt*):
+    if array_len == 0:
+        return ()
+    end
+
+    let tokenId: Uint256 = Uint256([array], 0)
+    let (value) = buildOrbOfOsuvoxFromData([array + 1], [array + 2])
+    orbArtifact_.write(tokenId=tokenId, value=value)
+
+    _initOrbData(array_len=array_len - 3, array=array + 3)
+    return ()
+end
+
+func _initCataclystData{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(array_len: felt, array: felt*):
+    if array_len == 0:
+        return ()
+    end
+
+    let tokenId: Uint256 = Uint256([array], 0)
+    let (value) = buildCataclystFromData([array + 1])
+    cataclystArtifact_.write(tokenId=tokenId, value=value)
+
+    _initCataclystData(array_len=array_len - 2, array=array + 2)
+    return ()
+end
+
+func _initHackEyeData{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(array_len: felt, array: felt*):
+    if array_len == 0:
+        return ()
+    end
+
+    let tokenId: Uint256 = Uint256([array], 0)
+    let (value) = buildHackEyeFromData([array + 1])
+    hackEyeArtifact_.write(tokenId=tokenId, value=value)
+
+    _initHackEyeData(array_len=array_len - 2, array=array + 2)
+    return ()
+end
+
+func _initCopycatData{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(array_len: felt, array: felt*):
+    if array_len == 0:
+        return ()
+    end
+
+    let tokenId: Uint256 = Uint256([array], 0)
+    let (value) = buildCopycatFromData([array + 1], [array + 2])
+    copycatArtifact_.write(tokenId=tokenId, value=value)
+
+    _initCopycatData(array_len=array_len - 3, array=array + 3)
+    return ()
+end
+
+func _initFreeProposalsData{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(array_len: felt, array: felt*):
+    if array_len == 0:
+        return ()
+    end
+
+    let tokenId: Uint256 = Uint256([array], 0)
+    let (value) = buildFreeProposalsFromData([array + 1], [array + 2])
+    freeProposalsArtifact_.write(tokenId=tokenId, value=value)
+
+    _initFreeProposalsData(array_len=array_len - 3, array=array + 3)
+    return ()
+end
+
+func _initGodModeData{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(array_len: felt, array: felt*):
+    if array_len == 0:
+        return ()
+    end
+
+    let tokenId: Uint256 = Uint256([array], 0)
+    let (value) = buildGodModeFromData([array + 1])
+    godModeArtifact_.write(tokenId=tokenId, value=value)
+
+    _initGodModeData(array_len=array_len - 2, array=array + 2)
     return ()
 end

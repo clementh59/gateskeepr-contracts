@@ -3,6 +3,13 @@
 from starkware.cairo.common.uint256 import Uint256
 from contracts.utils.ArtifactTypeUtils import (
     ChuckyArtifact,
+    RoomArtifact,
+    OrbArtifact,
+    CataclystArtifact,
+    HackEyeArtifact,
+    CopycatArtifact,
+    FreeProposalsArtifact,
+    GodModeArtifact
 )
 
 @contract_interface
@@ -59,6 +66,27 @@ namespace IArtifacts:
     end
 
     func getChuckyArtifact(tokenId: Uint256) -> (chucky: ChuckyArtifact):
+    end
+
+    func getRoomArtifact(tokenId: Uint256) -> (room: RoomArtifact):
+    end
+
+    func getOrbArtifact(tokenId: Uint256) -> (orb: OrbArtifact):
+    end
+
+    func getCataclystArtifact(tokenId: Uint256) -> (cataclyst: CataclystArtifact):
+    end
+
+    func getHackEyeArtifact(tokenId: Uint256) -> (hackEye: HackEyeArtifact):
+    end
+
+    func getCopycatArtifact(tokenId: Uint256) -> (copycat: CopycatArtifact):
+    end
+
+    func getFreeProposalArtifact(tokenId: Uint256) -> (freeProposals: FreeProposalsArtifact):
+    end
+
+    func getGodModeArtifact(tokenId: Uint256) -> (godMode: GodModeArtifact):
     end
 
 end
