@@ -52,3 +52,21 @@ By default, `unit/test_full_mint_artifacts` is disabled since it is quite long t
 ```python
 #@external
 ```
+
+In order to make it work, you'll need to update the openzeppelin erc721 lib:
+```cairo
+func owner_of{
+        syscall_ptr: felt*,
+        pedersen_ptr: HashBuiltin*,
+        range_check_ptr
+    }(token_id: Uint256) -> (owner: felt):
+    with_attr error_message("ERC721: token_id is not a valid Uint256"):
+        uint256_check(token_id)
+    end
+    let (owner) = ERC721_owners.read(token_id)
+    # with_attr error_message("ERC721: owner query for nonexistent token"):
+    #     assert_not_zero(owner)
+    # end
+    return (owner)
+end
+```
