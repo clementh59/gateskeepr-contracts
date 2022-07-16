@@ -5,7 +5,8 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from tests.integration.deployer import (test_integration, DeployedContracts)
 from tests.constants import (
     CALLER_ADDRESS,
-    ADMIN
+    ADMIN,
+    TD
 )
 from contracts.utils.constants import (
     STEP_BEFORE,
@@ -13,7 +14,27 @@ from contracts.utils.constants import (
     STEP_PUBLIC_SALE,
     STEP_SOLD_OUT,
     MAX_MINT_PER_ROW,
+    ROOM_1,
+    ROOM_2,
+    ROOM_3,
+    ROOM_4,
+    ROOM_5,
+    ROOM_6,
+    ROOM_7,
+    ROOM_8,
+    ROOM_9,
+    ROOM_10,
+    ROOM_11,
+    ROOM_12,
+    ROOM_ALL,
 )
+
+from contracts.utils.ArtifactTypeUtils import (
+    buildChuckyFromData,
+    TYPES,
+    ChuckyArtifact,
+)
+
 from contracts.interfaces.IArtifacts import IArtifacts
 from starkware.cairo.common.uint256 import (
     Uint256, 
@@ -36,36 +57,46 @@ end
 func test_should_set_artifacts_type_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
     let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
 
-    let (t1) = IArtifacts.getArtifactType(
+    check_if_artifacts_type_are_correct(deployed_contracts.artifact_address)
+
+    return ()
+end
+
+func check_if_artifacts_type_are_correct{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}(artifact_address: felt):
+    check_if_artifacts_type_is_correct(artifact_address, 1, TD.T1_TYPE)
+    check_if_artifacts_type_is_correct(artifact_address, 2, TD.T2_TYPE)
+    check_if_artifacts_type_is_correct(artifact_address, 3, TD.T3_TYPE)
+    check_if_artifacts_type_is_correct(artifact_address, 4, TD.T4_TYPE)
+    check_if_artifacts_type_is_correct(artifact_address, 5, TD.T5_TYPE)
+    return ()
+end
+
+func check_if_artifacts_type_is_correct{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}(artifact_address: felt, tokenId: felt, expectedType: felt):
+    let (t) = IArtifacts.getArtifactType(
+        contract_address=artifact_address,
+        tokenId = Uint256(tokenId, 0)
+    )
+    assert t = expectedType
+    return ()
+end
+
+
+@external
+func test_should_init_chucky_artifacts_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+
+    let (chucky1: ChuckyArtifact) = IArtifacts.getChuckyArtifact(
         contract_address=deployed_contracts.artifact_address,
         tokenId = Uint256(1,0)
     )
 
-    let (t2) = IArtifacts.getArtifactType(
-        contract_address=deployed_contracts.artifact_address,
-        tokenId = Uint256(2,0)
-    )
-
-    let (t3) = IArtifacts.getArtifactType(
-        contract_address=deployed_contracts.artifact_address,
-        tokenId = Uint256(3,0)
-    )
-
-    let (t4) = IArtifacts.getArtifactType(
+    let (chucky2: ChuckyArtifact) = IArtifacts.getChuckyArtifact(
         contract_address=deployed_contracts.artifact_address,
         tokenId = Uint256(4,0)
     )
 
-    let (t5) = IArtifacts.getArtifactType(
-        contract_address=deployed_contracts.artifact_address,
-        tokenId = Uint256(5,0)
-    )
-
-    assert t1 = 1
-    assert t2 = 3
-    assert t3 = 2
-    assert t4 = 4
-    assert t5 = 6
+    assert chucky1.room_number = TD.CHUCKY_T1_ROOM
+    assert chucky2.room_number = TD.CHUCKY_T2_ROOM
     
     return ()
 end

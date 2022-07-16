@@ -32,6 +32,15 @@ make deploy_proposal
 make deploy_artifacts
 ```
 
+## Artifacts
+
+In order to init the artifact contract, you'll need to initialize all the metadata
+Here is the data model:
+
+- **artifactsType**: `[typeOfTokenId1, typeOfTokenId2, typeOfTokenId3, ...]`
+Types are defined in `contracts/utils/ArtifactTypesUtils.cairo`
+- **chuckyInfo**: `[tokenId1, roomAssociatedWithTokenId1, tokenId2, roomAssociatedWithTokenId2, ...]`
+
 ## VRF
 
 For now, the vrf used when minting is a pseudo random one.

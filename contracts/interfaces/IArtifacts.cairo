@@ -1,6 +1,9 @@
 %lang starknet
 
 from starkware.cairo.common.uint256 import Uint256
+from contracts.utils.ArtifactTypeUtils import (
+    ChuckyArtifact,
+)
 
 @contract_interface
 namespace IArtifacts:
@@ -53,6 +56,9 @@ namespace IArtifacts:
     end
 
     func getArtifactType(tokenId: Uint256) -> (res: felt):
+    end
+
+    func getChuckyArtifact(tokenId: Uint256) -> (chucky: ChuckyArtifact):
     end
 
 end

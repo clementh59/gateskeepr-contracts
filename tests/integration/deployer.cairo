@@ -1,9 +1,14 @@
 from tests.constants import (
+    TD,
     ADMIN,
     ARTIFACTS_NAME,
-    ARTIFACTS_SYMBOL
+    ARTIFACTS_SYMBOL,
 )
 from starkware.cairo.common.cairo_builtins import HashBuiltin
+
+from contracts.utils.constants import (
+    MAX_SUPPLY
+)
 
 
 struct DeployedContracts:
@@ -33,11 +38,15 @@ namespace test_integration:
             ids.artifact_address = deploy_contract(
             "./contracts/Artifacts.cairo",
             # name, symbol, owner, vrfAddress
-            [ids.ARTIFACTS_NAME, ids.ARTIFACTS_SYMBOL, ids.ADMIN, ids.vrf_address, MAX_SUPPLY,
+            [ids.ARTIFACTS_NAME, ids.ARTIFACTS_SYMBOL, ids.ADMIN, ids.vrf_address, ids.MAX_SUPPLY,
             #types_len
-            5,
+            ids.TD.NUM_METADATA_DEF,
             #types
-            1,3,2,4,6
+            ids.TD.T1_TYPE, ids.TD.T2_TYPE, ids.TD.T3_TYPE, ids.TD.T4_TYPE, ids.TD.T5_TYPE,
+            # chuckyInfo_len
+            ids.TD.NUMBER_OF_CHUCKY * 2,
+            # chuckyInfo
+            ids.TD.CHUCKY_T1, ids.TD.CHUCKY_T1_ROOM, ids.TD.CHUCKY_T2, ids.TD.CHUCKY_T2_ROOM
             ]).contract_address
         %}
 

@@ -27,6 +27,12 @@ from contracts.utils.constants import (
     MAX_MINT_PER_ROW
 )
 
+from contracts.utils.ArtifactTypeUtils import (
+    buildChuckyFromData,
+    TYPES,
+    ChuckyArtifact,
+)
+
 from contracts.interfaces.IVRF import IVRF
 
 #
@@ -54,8 +60,16 @@ end
 func numAvailableToken_() -> (num: felt):
 end
 
+
+
+#### METADATA AND ARTIFACT TYPES
+
 @storage_var
 func artifactType_(tokenId: Uint256) -> (type: felt):
+end
+
+@storage_var
+func chuckyArtifact_(tokenId: Uint256) -> (type: ChuckyArtifact):
 end
 
 #
@@ -69,12 +83,14 @@ func constructor{
         range_check_ptr
     }(
         name: felt,
-        symbol: felt, 
+        symbol: felt,
         owner: felt,
         vrfAddress: felt,
         maxSupply: felt,
         artifactsType_len: felt,
         artifactsType: felt*,
+        chuckyData_len: felt,
+        chuckyData: felt*,
     ):
     ERC721.initializer(name, symbol)
     Ownable.initializer(owner)
@@ -82,6 +98,7 @@ func constructor{
     _initArtifactsType(artifactsType_len, artifactsType, 1)
     maxSupply_.write(value=maxSupply)
     numAvailableToken_.write(value=maxSupply)
+    _initChuckyData(chuckyData_len, chuckyData)
     return ()
 end
 
@@ -206,6 +223,16 @@ func numAvailableTokens{
         range_check_ptr
     }() -> (num: felt):
     let (res) = numAvailableToken_.read()
+    return (res)
+end
+
+@view 
+func getChuckyArtifact{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }(tokenId: Uint256) -> (chucky: ChuckyArtifact):
+    let (res) = chuckyArtifact_.read(tokenId=tokenId)
     return (res)
 end
 
@@ -487,5 +514,22 @@ func _initArtifactsType{
     let tokenId: Uint256 = Uint256(index, 0)
     artifactType_.write(tokenId = tokenId, value=[artifactsType])
     _initArtifactsType(artifactsType_len=artifactsType_len - 1, artifactsType=artifactsType + 1, index = index + 1)
+    return ()
+end
+
+func _initChuckyData{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(chuckyData_len: felt, chuckyData: felt*):
+    if chuckyData_len == 0:
+        return ()
+    end
+
+    let tokenId: Uint256 = Uint256([chuckyData], 0)
+    let (value) = buildChuckyFromData([chuckyData + 1])
+    chuckyArtifact_.write(tokenId=tokenId, value=value)
+
+    _initChuckyData(chuckyData_len=chuckyData_len - 2, chuckyData=chuckyData + 2)
     return ()
 end
