@@ -36,3 +36,19 @@ make deploy_artifacts
 
 For now, the vrf used when minting is a pseudo random one.
 Here is the original repo: https://github.com/milancermak/xoroshiro-cairo
+
+## Test
+
+```shell
+make test
+```
+
+If you want to run only one test suite:
+```shell
+make testFile path=unit/test_full_mint_artifacts
+```
+
+By default, `unit/test_full_mint_artifacts` is disabled since it is quite long to run, to run it, you'll need to uncomment this line:
+```python
+#@external
+```

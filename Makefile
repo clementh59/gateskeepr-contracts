@@ -10,8 +10,8 @@ test:
 testFile:
 	protostar test ./tests/${path} --cairo-path ./lib/cairo_contracts/src
 
-test_metadata:
-	make testFile path=unit/test_artifact_metadata.cairo
+test_artifact:
+	make testFile path=integration/test_artifacts.cairo
 
 clean:
 	rm -rf ./build

@@ -33,6 +33,44 @@ func __setup__{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*
 end
 
 @external
+func test_should_set_artifacts_type_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+
+    let (t1) = IArtifacts.getArtifactType(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(1,0)
+    )
+
+    let (t2) = IArtifacts.getArtifactType(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(2,0)
+    )
+
+    let (t3) = IArtifacts.getArtifactType(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(3,0)
+    )
+
+    let (t4) = IArtifacts.getArtifactType(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(4,0)
+    )
+
+    let (t5) = IArtifacts.getArtifactType(
+        contract_address=deployed_contracts.artifact_address,
+        tokenId = Uint256(5,0)
+    )
+
+    assert t1 = 1
+    assert t2 = 3
+    assert t3 = 2
+    assert t4 = 4
+    assert t5 = 6
+    
+    return ()
+end
+
+@external
 func test_admin_and_owner_should_be_equal{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
     let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
 
@@ -106,30 +144,6 @@ func test_should_not_be_able_to_mint_in_stage_WHITELIST_as_a_normal_user{syscall
         to=CALLER_ADDRESS,
         amount=1
     )
-    
-    return ()
-end
-
-@external
-func test_token_id_should_increment_automatically{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
-    alloc_locals
-    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
-
-    changeStep(deployed_contracts.artifact_address, STEP_PUBLIC_SALE)
-
-    let (next_t: Uint256) = IArtifacts.nextTokenId(contract_address=deployed_contracts.artifact_address)
-
-    IArtifacts.mint(contract_address=deployed_contracts.artifact_address, to=CALLER_ADDRESS, amount=1)
-
-    let (next_t1: Uint256) = IArtifacts.nextTokenId(contract_address=deployed_contracts.artifact_address)
-    let (expect_t1: Uint256, _) = uint256_add(next_t, Uint256(1, 0))
-    assert next_t1 = expect_t1
-
-    IArtifacts.mint(contract_address=deployed_contracts.artifact_address, to=CALLER_ADDRESS, amount=1)
-
-    let (next_t2: Uint256) = IArtifacts.nextTokenId(contract_address=deployed_contracts.artifact_address)
-    let (expect_t2: Uint256, _) = uint256_add(next_t, Uint256(2, 0))
-    assert next_t2 = expect_t2
     
     return ()
 end

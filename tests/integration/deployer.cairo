@@ -32,8 +32,13 @@ namespace test_integration:
         %{
             ids.artifact_address = deploy_contract(
             "./contracts/Artifacts.cairo",
-            # name, symbol, owner
-            [ids.ARTIFACTS_NAME, ids.ARTIFACTS_SYMBOL, ids.ADMIN, ids.vrf_address]).contract_address
+            # name, symbol, owner, vrfAddress
+            [ids.ARTIFACTS_NAME, ids.ARTIFACTS_SYMBOL, ids.ADMIN, ids.vrf_address, MAX_SUPPLY,
+            #types_len
+            5,
+            #types
+            1,3,2,4,6
+            ]).contract_address
         %}
 
         # Replace mocks with deployed contract addresses here

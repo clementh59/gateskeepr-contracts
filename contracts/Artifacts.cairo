@@ -24,8 +24,7 @@ from contracts.utils.constants import (
     STEP_WHITELIST_SALE,
     STEP_PUBLIC_SALE,
     STEP_SOLD_OUT,
-    MAX_MINT_PER_ROW,
-    MAX_SUPPLY
+    MAX_MINT_PER_ROW
 )
 
 from contracts.interfaces.IVRF import IVRF
@@ -39,17 +38,12 @@ from contracts.interfaces.IVRF import IVRF
 func step_() -> (res : felt):
 end
 
-# keep in mind the last token id to auto increment when minting
-@storage_var
-func lastTokenId_() -> (tokenId : Uint256):
-end
-
-@storage_var
-func tokenMetadata_(tokenId: Uint256) -> (metadata : felt):
-end
-
 @storage_var
 func vrfAddress_() -> (address : felt):
+end
+
+@storage_var
+func maxSupply_() -> (address : felt):
 end
 
 @storage_var
@@ -58,6 +52,10 @@ end
 
 @storage_var
 func numAvailableToken_() -> (num: felt):
+end
+
+@storage_var
+func artifactType_(tokenId: Uint256) -> (type: felt):
 end
 
 #
@@ -73,12 +71,17 @@ func constructor{
         name: felt,
         symbol: felt, 
         owner: felt,
-        vrfAddress: felt
+        vrfAddress: felt,
+        maxSupply: felt,
+        artifactsType_len: felt,
+        artifactsType: felt*,
     ):
     ERC721.initializer(name, symbol)
     Ownable.initializer(owner)
-    lastTokenId_.write(value=Uint256(1,0))
     vrfAddress_.write(value=vrfAddress)
+    _initArtifactsType(artifactsType_len, artifactsType, 1)
+    maxSupply_.write(value=maxSupply)
+    numAvailableToken_.write(value=maxSupply)
     return ()
 end
 
@@ -187,41 +190,28 @@ func owner{
 end
 
 @view
-func nextTokenId{
-        syscall_ptr : felt*,
-        pedersen_ptr : HashBuiltin*,
-        range_check_ptr
-    }() -> (tokenId: Uint256):
-    let (lastTokenId : Uint256) = lastTokenId_.read()
-    let one_as_uint = Uint256(1, 0)
-    let (tokenId : Uint256, _) = uint256_add(lastTokenId, one_as_uint)
-    return (tokenId)
-end
-
-@view
-func getItemType{
+func getArtifactType{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,
         range_check_ptr
     }(tokenId: Uint256) -> (res: felt):
-    let (metadata) = tokenMetadata_.read(tokenId)
-    return (metadata)
+    let (res) = artifactType_.read(tokenId)
+    return (res)
+end
+
+@view 
+func numAvailableTokens{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }() -> (num: felt):
+    let (res) = numAvailableToken_.read()
+    return (res)
 end
 
 #
 # Externals
 #
-
-@external
-func setTokensMetadata{
-        pedersen_ptr: HashBuiltin*,
-        syscall_ptr: felt*,
-        range_check_ptr
-    }(values_len : felt, values : felt*):
-    Ownable.assert_only_owner()
-    _setTokensMetadata(values_len, values, 1)
-    return ()
-end
 
 @external
 func setMintingStep{
@@ -381,11 +371,12 @@ func _mint{
     let (vrfAddress) = vrfAddress_.read()
     let (random) = IVRF.generateVRF(contract_address=vrfAddress)
     let (numAvailableToken) = numAvailableToken_.read()
-    let (_, remainder) = unsigned_div_rem(random, MAX_SUPPLY)
+    let (_, remainder) = unsigned_div_rem(random, numAvailableToken)
+
     let (tokenIdFelt) = _getAvailableTokenAtIndex(remainder, numAvailableToken)
-    let tokenId: Uint256 = Uint256(tokenIdFelt, 0)
+    # we do remainder + 1 because the first tokenId is 1 and not 0
+    let tokenId: Uint256 = Uint256(tokenIdFelt + 1, 0)
     ERC721._mint(to, tokenId)
-    lastTokenId_.write(value=tokenId)
 
     numAvailableToken_.write(value=numAvailableToken-1)
 
@@ -483,18 +474,18 @@ func _fill_conditions_in_case_of_STEP_BEFORE{
     return ()
 end
 
-func _setTokensMetadata{
+func _initArtifactsType{
         pedersen_ptr: HashBuiltin*,
         syscall_ptr: felt*,
         range_check_ptr
-    }(values_len : felt, values : felt*, index: felt):
+    }(artifactsType_len: felt, artifactsType: felt*, index: felt):
     
-    if values_len == 0:
+    if artifactsType_len == 0:
         return ()
     end
 
     let tokenId: Uint256 = Uint256(index, 0)
-    tokenMetadata_.write(tokenId = tokenId, value=[values])
-    _setTokensMetadata(values_len=values_len - 1, values=values + 1, index = index + 1)
+    artifactType_.write(tokenId = tokenId, value=[artifactsType])
+    _initArtifactsType(artifactsType_len=artifactsType_len - 1, artifactsType=artifactsType + 1, index = index + 1)
     return ()
 end
