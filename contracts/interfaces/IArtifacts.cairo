@@ -50,7 +50,7 @@ namespace IArtifacts:
     func isApprovedForAll(owner: felt, operator: felt) -> (isApproved: felt):
     end
 
-    func tokenURI(tokenId: Uint256) -> (tokenURI: felt):
+    func tokenURI(tokenId: Uint256) -> (token_uri_len : felt, token_uri : felt*):
     end
 
     func numAvailableTokens() -> (res: felt):

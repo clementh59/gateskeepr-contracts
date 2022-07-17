@@ -10,7 +10,6 @@ from contracts.utils.constants import (
     MAX_SUPPLY
 )
 
-
 struct DeployedContracts:
     member artifact_address : felt
     member proposals_address : felt
@@ -39,6 +38,10 @@ namespace test_integration:
             "./contracts/Artifacts.cairo",
             # name, symbol, owner, vrfAddress
             [ids.ARTIFACTS_NAME, ids.ARTIFACTS_SYMBOL, ids.ADMIN, ids.vrf_address, ids.MAX_SUPPLY,
+            # baseUri_len: felt, baseUri: felt*, 
+            ids.TD.BASE_URI_LEN, ids.TD.BASE_URI_1,
+            # uriSuffix: felt,
+            ids.TD.TOKEN_URI_SUFFIX,
             #types_len
             ids.TD.NUM_METADATA_DEF,
             #types

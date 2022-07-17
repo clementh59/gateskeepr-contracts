@@ -4,6 +4,7 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin, SignatureBuiltin
+from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.uint256 import (
     Uint256,
     uint256_add
@@ -16,6 +17,8 @@ from starkware.cairo.common.math import (
 
 from openzeppelin.token.erc721.library import ERC721
 from openzeppelin.introspection.ERC165 import ERC165
+from contracts.utils.ShortString import uint256_to_ss
+from contracts.utils.Array import concat_arr
 
 from openzeppelin.access.ownable import Ownable
 
@@ -74,6 +77,18 @@ end
 func numAvailableToken_() -> (num: felt):
 end
 
+# token uri
+@storage_var
+func ERC721_base_token_uri(index : felt) -> (res : felt):
+end
+
+@storage_var
+func ERC721_base_token_uri_len() -> (res : felt):
+end
+
+@storage_var
+func ERC721_base_token_uri_suffix() -> (res : felt):
+end
 
 
 #### METADATA AND ARTIFACT TYPES
@@ -129,6 +144,8 @@ func constructor{
         owner: felt,
         vrfAddress: felt,
         maxSupply: felt,
+        baseUri_len: felt, baseUri: felt*, 
+        uriSuffix: felt,
         artifactsType_len: felt,
         artifactsType: felt*,
         chuckyData_len: felt, chuckyData: felt*,
@@ -146,6 +163,7 @@ func constructor{
     _initArtifactsType(artifactsType_len, artifactsType, 1)
     maxSupply_.write(value=maxSupply)
     numAvailableToken_.write(value=maxSupply)
+    _setBaseTokenURI(baseUri_len, baseUri, uriSuffix)
     _initChuckyData(chuckyData_len, chuckyData)
     _initRoomArtifactData(roomArtifactData_len, roomArtifactData)
     _initOrbData(orbData_len, orbData)
@@ -246,9 +264,28 @@ func tokenURI{
         syscall_ptr: felt*,
         pedersen_ptr: HashBuiltin*,
         range_check_ptr
-    }(tokenId: Uint256) -> (tokenURI: felt):
-    let (tokenURI: felt) = ERC721.token_uri(tokenId)
-    return (tokenURI)
+    }(tokenId: Uint256) -> (token_uri_len: felt, token_uri: felt*):
+    
+    alloc_locals
+
+    let (exists) = ERC721._exists(tokenId)
+    assert exists = 1
+
+    let (local base_token_uri) = alloc()
+    let (local base_token_uri_len) = ERC721_base_token_uri_len.read()
+
+    _baseTokenURI(base_token_uri_len, base_token_uri)
+
+    let (token_id_ss_len, token_id_ss) = uint256_to_ss(tokenId)
+    let (token_uri_temp, token_uri_len_temp) = concat_arr(
+        base_token_uri_len, base_token_uri, token_id_ss_len, token_id_ss
+    )
+    let (ERC721_base_token_uri_suffix_local) = ERC721_base_token_uri_suffix.read()
+    let (local suffix) = alloc()
+    [suffix] = ERC721_base_token_uri_suffix_local
+    let (token_uri, token_uri_len) = concat_arr(token_uri_len_temp, token_uri_temp, 1, suffix)
+
+    return (token_uri_len=token_uri_len, token_uri=token_uri)
 end
 
 @view
@@ -463,26 +500,6 @@ func burn{
     }(tokenId: Uint256):
     ERC721.assert_only_token_owner(tokenId)
     ERC721._burn(tokenId)
-    return ()
-end
-
-@external
-func setTokenURI{
-        pedersen_ptr: HashBuiltin*,
-        syscall_ptr: felt*,
-        range_check_ptr
-    }(tokenId: Uint256, tokenURI: felt):
-    Ownable.assert_only_owner()
-    ERC721._set_token_uri(tokenId, tokenURI)
-    return ()
-end
-
-@external
-func setBaseTokenURI{pedersen_ptr : HashBuiltin*, syscall_ptr : felt*, range_check_ptr}(
-    base_token_uri_len : felt, base_token_uri : felt*, token_uri_suffix : felt
-):
-    Ownable.assert_only_owner()
-    #ERC721_Metadata_setBaseTokenURI(base_token_uri_len, base_token_uri, token_uri_suffix)
     return ()
 end
 
@@ -775,5 +792,39 @@ func _initGodModeData{
     godModeArtifact_.write(tokenId=tokenId, value=value)
 
     _initGodModeData(array_len=array_len - 2, array=array + 2)
+    return ()
+end
+
+func _baseTokenURI{
+    syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
+}(base_token_uri_len : felt, base_token_uri : felt*):
+    if base_token_uri_len == 0:
+        return ()
+    end
+    let (base) = ERC721_base_token_uri.read(base_token_uri_len)
+    assert [base_token_uri] = base
+    _baseTokenURI(
+        base_token_uri_len=base_token_uri_len - 1, base_token_uri=base_token_uri + 1
+    )
+    return ()
+end
+
+func _setBaseTokenURI{
+    syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
+}(token_uri_len : felt, token_uri : felt*, token_uri_suffix : felt):
+    _ERC721_Metadata_setBaseTokenURI(token_uri_len, token_uri)
+    ERC721_base_token_uri_len.write(token_uri_len)
+    ERC721_base_token_uri_suffix.write(token_uri_suffix)
+    return ()
+end
+
+func _ERC721_Metadata_setBaseTokenURI{
+    syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
+}(token_uri_len : felt, token_uri : felt*):
+    if token_uri_len == 0:
+        return ()
+    end
+    ERC721_base_token_uri.write(index=token_uri_len, value=[token_uri])
+    _ERC721_Metadata_setBaseTokenURI(token_uri_len=token_uri_len - 1, token_uri=token_uri + 1)
     return ()
 end
