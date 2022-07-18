@@ -16,7 +16,8 @@ from contracts.utils.ArtifactTypeUtils import (
     HackEyeArtifact,
     CopycatArtifact,
     FreeProposalsArtifact,
-    GodModeArtifact
+    GodModeArtifact,
+    buildUriInfoFrom2Params
 )
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
@@ -97,5 +98,12 @@ func test_build_god_mode_from_data_artifact{syscall_ptr : felt*, range_check_ptr
     assert art.room_number = 7
     let (art: GodModeArtifact) = buildGodModeFromData(5)
     assert art.room_number = 5
+    return ()
+end
+
+@external 
+func test_2():
+    let (res) = buildUriInfoFrom2Params(48, 1, 2)
+    %{print(ids.res)%}
     return ()
 end

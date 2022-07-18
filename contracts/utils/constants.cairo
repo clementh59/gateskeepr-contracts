@@ -20,3 +20,5 @@ const ROOM_10 = 10
 const ROOM_11 = 11
 const ROOM_12 = 12
 const ROOM_ALL = 13
+
+const STR_UNDERSCORE = 95

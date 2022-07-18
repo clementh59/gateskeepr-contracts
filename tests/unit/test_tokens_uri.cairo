@@ -66,23 +66,24 @@ func __setup__{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*
         ids.artifact_address = deploy_contract(
         "./contracts/Artifacts.cairo",
         # name, symbol, owner, vrfAddress
-        [1, 1, ids.ADMIN, ids.vrf_address, 3,
+        [1, 1, ids.ADMIN, ids.vrf_address, 7,
         # baseUri_len: felt, baseUri: felt*, 
         5, 18, 19, 20, 21, 22,
         # uriSuffix: felt,
         100,
         #types_len
-        3,
+        7,
         #types
-        8,8,8,
+        8,8,8,0,0,0,0,
         # chuckyInfo_len
         6,
         # chuckyInfo
-        1,1,2,1,3,1,
+        1,1,2,7,3,13,
         # roomArtifactData_len
         0,
         # orbData_len
-        0,
+        12,
+        4, 1, 2, 5, 10, 7, 6, 8, 10, 7, 12, 12,
         # cataclyst
         0,
         # hack eye
@@ -108,7 +109,7 @@ func test_tokenUri{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuil
 
     %{ stop_prank_callable = start_prank(caller_address=ids.ADMIN, target_contract_address=ids.deployed_contracts.artifact_address)%}
 
-    IArtifacts.mint(contract_address=deployed_contracts.artifact_address, to=ADMIN ,amount=3)
+    IArtifacts.mint(contract_address=deployed_contracts.artifact_address, to=ADMIN ,amount=7)
     let (len, uri) = IArtifacts.tokenURI(contract_address=deployed_contracts.artifact_address, tokenId = Uint256(1, 0))
     assert len = 7
     assert 18 = uri[0]
@@ -116,11 +117,26 @@ func test_tokenUri{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuil
     assert 20 = uri[2]
     assert 21 = uri[3]
     assert 22 = uri[4]
-    assert 49 = uri[5] # 1 corresponds to 49 in ascii
+    assert 3694385 = uri[5]
     assert 100 = uri[6]
 
     let (len, uri) = IArtifacts.tokenURI(contract_address=deployed_contracts.artifact_address, tokenId = Uint256(2, 0))
-    assert 50 = uri[5] # 2 corresponds to 50 in ascii
+    assert 3694391 = uri[5]
+
+    let (len, uri) = IArtifacts.tokenURI(contract_address=deployed_contracts.artifact_address, tokenId = Uint256(3, 0))
+    assert 945762611 = uri[5]
+
+    let (len, uri) = IArtifacts.tokenURI(contract_address=deployed_contracts.artifact_address, tokenId = Uint256(4, 0))
+    assert 207755501362 = uri[5]
+
+    let (len, uri) = IArtifacts.tokenURI(contract_address=deployed_contracts.artifact_address, tokenId = Uint256(5, 0))
+    assert 53185405280055 = uri[5]
+
+    let (len, uri) = IArtifacts.tokenURI(contract_address=deployed_contracts.artifact_address, tokenId = Uint256(6, 0))
+    assert 53185525788976 = uri[5]
+
+    let (len, uri) = IArtifacts.tokenURI(contract_address=deployed_contracts.artifact_address, tokenId = Uint256(7, 0))
+    assert 13615463785247026 = uri[5]
 
     %{ stop_prank_callable() %}
     return ()

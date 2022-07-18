@@ -3,7 +3,6 @@ MAX_LEN_FELT = 31
 def str_to_felt(text):
     if len(text) > MAX_LEN_FELT:
         raise Exception("Text length too long to convert to felt.")
-
     return int.from_bytes(text.encode(), "big")
 
 

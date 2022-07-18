@@ -12,7 +12,24 @@ from contracts.utils.constants import (
     ROOM_11,
     ROOM_12,
     ROOM_ALL,
+    STR_UNDERSCORE,
 )
+
+namespace STR_NUMBER:
+    const _1 = 49
+    const _2 = 50
+    const _3 = 51
+    const _4 = 52
+    const _5 = 53
+    const _6 = 54
+    const _7 = 55
+    const _8 = 56
+    const _9 = 57
+    const _10 = 12592
+    const _11 = 12593
+    const _12 = 12594
+    const _ALL = 12595
+end
 
 #
 # Artifacts codes
@@ -35,6 +52,21 @@ namespace TYPES:
 
     # Rooms
     const ROOM = 99
+
+    # Str
+    const STR_ORB_OF_OSUVOX = 48
+    const STR_CATACLYST = 49
+    const STR_EXTRA_PASS = 50
+    const STR_HACK_EYE = 51
+    const STR_COPYCAT = 52
+    const STR_VIP_PASS = 53
+    const STR_FREE_PROPOSALS = 54
+    const STR_GOD_MODE = 55
+    const STR_CHUCKY = 56
+    const STR_HAPPY_HOUR = 57
+    const STR_SPY = 12592
+    const STR_FOG = 12593
+    const STR_ROOM = 14649
 end
 
 
@@ -159,4 +191,84 @@ func buildGodModeFromData(param1: felt) -> (godMode: GodModeArtifact):
     local godMode: GodModeArtifact
     assert godMode.room_number = param1
     return (godMode)
+end
+
+func buildUriInfoFromParam(type_str: felt, param1_felt: felt) -> (uri: felt):
+    alloc_locals
+    let (num, param) = getStrFromNumber(param1_felt)
+    if num == 2:
+        tempvar shift = 256
+    else:
+        tempvar shift = 1
+    end
+    return (type_str * 256 * 256 * shift + STR_UNDERSCORE * 256 * shift + param)
+end
+
+func buildUriInfoFrom2Params(type_str: felt, param1_felt: felt, param2_felt: felt) -> (uri: felt):
+    alloc_locals
+    let (num1, param1) = getStrFromNumber(param1_felt)
+    let (num2, param2) = getStrFromNumber(param2_felt)
+
+    if num1 == 2:
+        tempvar shift1 = 256
+    else:
+        tempvar shift1 = 1
+    end
+    
+    if num2 == 2:
+        tempvar shift2 = 256
+    else:
+        tempvar shift2 = 1
+    end
+
+    return (
+        type_str * 256 * 256 * 256 * 256 * shift1 * shift2 + 
+        STR_UNDERSCORE * 256 * 256 * 256 * shift1 * shift2 + 
+        param1 * 256 * 256 * shift2 + 
+        STR_UNDERSCORE * 256 * shift2 + 
+        param2
+    )
+end
+
+func getStrFromNumber(num: felt) -> (num_letters: felt, str: felt):
+    if num == ROOM_1:
+        return (1,STR_NUMBER._1)
+    end
+    if num == ROOM_2:
+        return (1,STR_NUMBER._2)
+    end
+    if num == ROOM_3:
+        return (1,STR_NUMBER._3)
+    end
+    if num == ROOM_4:
+        return (1,STR_NUMBER._4)
+    end
+    if num == ROOM_5:
+        return (1,STR_NUMBER._5)
+    end
+    if num == ROOM_6:
+        return (1,STR_NUMBER._6)
+    end
+    if num == ROOM_7:
+        return (1,STR_NUMBER._7)
+    end
+    if num == ROOM_8:
+        return (1,STR_NUMBER._8)
+    end
+    if num == ROOM_9:
+        return (1,STR_NUMBER._9)
+    end
+    if num == ROOM_10:
+        return (2,STR_NUMBER._10)
+    end
+    if num == ROOM_11:
+        return (2,STR_NUMBER._11)
+    end
+    if num == ROOM_12:
+        return (2,STR_NUMBER._12)
+    end
+    if num == ROOM_ALL:
+        return (2,STR_NUMBER._ALL)
+    end
+    return (1, 0)
 end

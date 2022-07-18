@@ -27,7 +27,8 @@ from contracts.utils.constants import (
     STEP_WHITELIST_SALE,
     STEP_PUBLIC_SALE,
     STEP_SOLD_OUT,
-    MAX_MINT_PER_ROW
+    MAX_MINT_PER_ROW,
+    STR_UNDERSCORE
 )
 
 from contracts.utils.ArtifactTypeUtils import (
@@ -47,7 +48,10 @@ from contracts.utils.ArtifactTypeUtils import (
     HackEyeArtifact,
     CopycatArtifact,
     FreeProposalsArtifact,
-    GodModeArtifact
+    GodModeArtifact,
+    getStrFromNumber,
+    buildUriInfoFromParam,
+    buildUriInfoFrom2Params,
 )
 
 from contracts.interfaces.IVRF import IVRF
@@ -265,7 +269,6 @@ func tokenURI{
         pedersen_ptr: HashBuiltin*,
         range_check_ptr
     }(tokenId: Uint256) -> (token_uri_len: felt, token_uri: felt*):
-    
     alloc_locals
 
     let (exists) = ERC721._exists(tokenId)
@@ -276,14 +279,15 @@ func tokenURI{
 
     _baseTokenURI(base_token_uri_len, base_token_uri)
 
-    let (token_id_ss_len, token_id_ss) = uint256_to_ss(tokenId)
-    let (token_uri_temp, token_uri_len_temp) = concat_arr(
-        base_token_uri_len, base_token_uri, token_id_ss_len, token_id_ss
-    )
+    let (artifactUri) = buildUriInfoFromArtifact(tokenId)
+
+    assert base_token_uri[base_token_uri_len] = artifactUri
+    let base_token_uri_len = base_token_uri_len + 1
+
     let (ERC721_base_token_uri_suffix_local) = ERC721_base_token_uri_suffix.read()
     let (local suffix) = alloc()
     [suffix] = ERC721_base_token_uri_suffix_local
-    let (token_uri, token_uri_len) = concat_arr(token_uri_len_temp, token_uri_temp, 1, suffix)
+    let (token_uri, token_uri_len) = concat_arr(base_token_uri_len, base_token_uri, 1, suffix)
 
     return (token_uri_len=token_uri_len, token_uri=token_uri)
 end
@@ -795,6 +799,8 @@ func _initGodModeData{
     return ()
 end
 
+###### TOKEN URI INTERNALS
+
 func _baseTokenURI{
     syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
 }(base_token_uri_len : felt, base_token_uri : felt*):
@@ -827,4 +833,61 @@ func _ERC721_Metadata_setBaseTokenURI{
     ERC721_base_token_uri.write(index=token_uri_len, value=[token_uri])
     _ERC721_Metadata_setBaseTokenURI(token_uri_len=token_uri_len - 1, token_uri=token_uri + 1)
     return ()
+end
+
+func buildUriInfoFromArtifact{
+    syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
+}(tokenId: Uint256) -> (uri: felt):
+    alloc_locals
+    let (type) = getArtifactType(tokenId)
+    
+    if type == TYPES.ORB_OF_OSUVOX:
+        let (orb) = getOrbArtifact(tokenId)
+        let (res) = buildUriInfoFrom2Params(TYPES.STR_ORB_OF_OSUVOX, orb.room_number, orb.rarity)
+        return (res)
+    end
+
+    if type == TYPES.ROOM:
+        let (room) = getRoomArtifact(tokenId)
+        let (res) = buildUriInfoFrom2Params(TYPES.STR_ROOM, room.room_number, room.rarity)
+        return (res)
+    end
+
+    if type == TYPES.CATACLYST:
+        let (cataclyst) = getCataclystArtifact(tokenId)
+        let (res) = buildUriInfoFromParam(TYPES.STR_CATACLYST, cataclyst.room_number)
+        return (res)
+    end
+
+    if type == TYPES.CHUCKY:
+        let (chucky) = getChuckyArtifact(tokenId)
+        let (res) = buildUriInfoFromParam(TYPES.STR_CHUCKY, chucky.room_number)
+        return (res)
+    end
+
+    if type == TYPES.HACK_EYE:
+        let (he) = getHackEyeArtifact(tokenId)
+        let (res) = buildUriInfoFromParam(TYPES.STR_HACK_EYE, he.room_number)
+        return (res)
+    end
+
+    if type == TYPES.COPYCAT:
+        let (copycat) = getCopycatArtifact(tokenId)
+        let (res) = buildUriInfoFrom2Params(TYPES.STR_COPYCAT, copycat.rarity, copycat.knowRoom)
+        return (res)
+    end
+
+    if type == TYPES.FREE_PROPOSALS:
+        let (fp_) = getFreeProposalArtifact(tokenId)
+        let (res) = buildUriInfoFrom2Params(TYPES.STR_FREE_PROPOSALS, fp_.room_number, fp_.number)
+        return (res)
+    end
+
+    if type == TYPES.GOD_MODE:
+        let (gm) = getGodModeArtifact(tokenId)
+        let (res) = buildUriInfoFromParam(TYPES.STR_GOD_MODE, gm.room_number)
+        return (res)
+    end
+
+    return (0)
 end
