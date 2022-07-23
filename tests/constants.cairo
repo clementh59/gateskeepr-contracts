@@ -1,17 +1,5 @@
 from contracts.utils.constants import (
-    ROOM_1,
-    ROOM_2,
-    ROOM_3,
-    ROOM_4,
-    ROOM_5,
-    ROOM_6,
-    ROOM_7,
-    ROOM_8,
-    ROOM_9,
-    ROOM_10,
-    ROOM_11,
-    ROOM_12,
-    ROOM_ALL,
+    R,
 )
 
 from contracts.utils.ArtifactTypeUtils import TYPES
@@ -83,48 +71,48 @@ namespace TD:
 
     ## Chucky data
     const NUMBER_OF_CHUCKY = 2
-    const CHUCKY_T1_ROOM = ROOM_ALL
-    const CHUCKY_T2_ROOM = ROOM_3
+    const CHUCKY_T1_ROOM = R.ROOM_ALL
+    const CHUCKY_T2_ROOM = R.ROOM_3
 
     ## Room artifact
     const NUMBER_OF_ROOM_ARTIFACT = 2
-    const ROOM_T1_ROOM = ROOM_1
+    const ROOM_T1_ROOM = R.ROOM_1
     const ROOM_T1_RARITY = 1
-    const ROOM_T2_ROOM = ROOM_8
+    const ROOM_T2_ROOM = R.ROOM_8
     const ROOM_T2_RARITY = 2
 
     # Orb
     const NUMBER_OF_ORB_ARTIFACT = 2
-    const ORB_T1_ROOM = ROOM_4
+    const ORB_T1_ROOM = R.ROOM_4
     const ORB_T1_RARITY = 1
-    const ORB_T2_ROOM = ROOM_2
+    const ORB_T2_ROOM = R.ROOM_2
     const ORB_T2_RARITY = 1
 
     # Cataclyst
     const NUMBER_OF_CATACLYST_ARTIFACT = 1
-    const CATACLYST_T1_ROOM = ROOM_1
+    const CATACLYST_T1_ROOM = R.ROOM_1
 
     # Hack eye
     const NUMBER_OF_HACK_EYE_ARTIFACT = 1
-    const HACK_EYE_T1_ROOM = ROOM_3
+    const HACK_EYE_T1_ROOM = R.ROOM_3
 
     # Copycat
     const NUMBER_OF_COPYCAT_ARTIFACT = 2
-    const COPYCAT_T1_RARITY = ROOM_1
+    const COPYCAT_T1_RARITY = R.ROOM_1
     const COPYCAT_T1_KNOWN_ROOM = 1
-    const COPYCAT_T2_RARITY = ROOM_ALL
+    const COPYCAT_T2_RARITY = R.ROOM_ALL
     const COPYCAT_T2_KNOWN_ROOM = 0
 
     # Free proposals
     const NUMBER_OF_FP_ARTIFACT = 2
-    const FP_T1_ROOM = ROOM_2
+    const FP_T1_ROOM = R.ROOM_2
     const FP_T1_NUMBER = 10
-    const FP_T2_ROOM = ROOM_ALL
+    const FP_T2_ROOM = R.ROOM_ALL
     const FP_T2_NUMBER = 42
 
     # God mode
     const NUMBER_OF_GODMODE_ARTIFACT = 2
-    const GODMODE_T1_ROOM = ROOM_2
-    const GODMODE_T2_ROOM = ROOM_ALL
+    const GODMODE_T1_ROOM = R.ROOM_2
+    const GODMODE_T2_ROOM = R.ROOM_ALL
 
 end

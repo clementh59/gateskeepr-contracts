@@ -11,3 +11,6 @@ proposals = [
 artifacts = [
     "./contracts/Artifacts.cairo",
 ]
+vrf = [
+    "./contracts/vrf/pseudo-random.cairo",
+]

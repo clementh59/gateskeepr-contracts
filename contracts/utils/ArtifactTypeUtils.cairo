@@ -1,17 +1,5 @@
 from contracts.utils.constants import (
-    ROOM_1,
-    ROOM_2,
-    ROOM_3,
-    ROOM_4,
-    ROOM_5,
-    ROOM_6,
-    ROOM_7,
-    ROOM_8,
-    ROOM_9,
-    ROOM_10,
-    ROOM_11,
-    ROOM_12,
-    ROOM_ALL,
+    R,
     STR_UNDERSCORE,
 )
 
@@ -231,43 +219,43 @@ func buildUriInfoFrom2Params(type_str: felt, param1_felt: felt, param2_felt: fel
 end
 
 func getStrFromNumber(num: felt) -> (num_letters: felt, str: felt):
-    if num == ROOM_1:
+    if num == R.ROOM_1:
         return (1,STR_NUMBER._1)
     end
-    if num == ROOM_2:
+    if num == R.ROOM_2:
         return (1,STR_NUMBER._2)
     end
-    if num == ROOM_3:
+    if num == R.ROOM_3:
         return (1,STR_NUMBER._3)
     end
-    if num == ROOM_4:
+    if num == R.ROOM_4:
         return (1,STR_NUMBER._4)
     end
-    if num == ROOM_5:
+    if num == R.ROOM_5:
         return (1,STR_NUMBER._5)
     end
-    if num == ROOM_6:
+    if num == R.ROOM_6:
         return (1,STR_NUMBER._6)
     end
-    if num == ROOM_7:
+    if num == R.ROOM_7:
         return (1,STR_NUMBER._7)
     end
-    if num == ROOM_8:
+    if num == R.ROOM_8:
         return (1,STR_NUMBER._8)
     end
-    if num == ROOM_9:
+    if num == R.ROOM_9:
         return (1,STR_NUMBER._9)
     end
-    if num == ROOM_10:
+    if num == R.ROOM_10:
         return (2,STR_NUMBER._10)
     end
-    if num == ROOM_11:
+    if num == R.ROOM_11:
         return (2,STR_NUMBER._11)
     end
-    if num == ROOM_12:
+    if num == R.ROOM_12:
         return (2,STR_NUMBER._12)
     end
-    if num == ROOM_ALL:
+    if num == R.ROOM_ALL:
         return (2,STR_NUMBER._ALL)
     end
     return (1, 0)
