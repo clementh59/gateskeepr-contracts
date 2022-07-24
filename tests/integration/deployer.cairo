@@ -3,6 +3,7 @@ from tests.constants import (
     ADMIN,
     ARTIFACTS_NAME,
     ARTIFACTS_SYMBOL,
+    CALLER_ADDRESS
 )
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
@@ -25,6 +26,7 @@ namespace test_integration:
         local artifact_address : felt
         local vrf_address : felt
         local proposals_address : felt
+        local token_address : felt
 
         %{
             ids.vrf_address = deploy_contract(
@@ -34,10 +36,16 @@ namespace test_integration:
         %}
 
         %{
+            ids.token_address = deploy_contract(
+            "./contracts/ERC20.cairo",
+            [0x1 0x1 0x1 1000000000 0 ids.CALLER_ADDRESS]).contract_address
+        %}
+
+        %{
             ids.artifact_address = deploy_contract(
             "./contracts/Artifacts.cairo",
             # name, symbol, owner, vrfAddress
-            [ids.ARTIFACTS_NAME, ids.ARTIFACTS_SYMBOL, ids.ADMIN, ids.vrf_address, ids.maxSupply,
+            [ids.ARTIFACTS_NAME, ids.ARTIFACTS_SYMBOL, ids.ADMIN, ids.vrf_address, ids.maxSupply, ids.token_address,
             # baseUri_len: felt, baseUri: felt*, 
             ids.TD.BASE_URI_LEN, ids.TD.BASE_URI_1,
             # uriSuffix: felt,
