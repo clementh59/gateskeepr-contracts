@@ -95,4 +95,13 @@ namespace IArtifacts:
     func getGodModeArtifact(tokenId: Uint256) -> (godMode: GodModeArtifact):
     end
 
+    func totalSupply() -> (totalSupply: Uint256):
+    end
+
+    func tokenByIndex(index: Uint256) -> (tokenId: Uint256):
+    end
+
+    func tokenOfOwnerByIndex(owner: felt, index: Uint256) -> (tokenId: Uint256):
+    end
+
 end
