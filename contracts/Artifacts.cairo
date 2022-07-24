@@ -535,6 +535,31 @@ func renounceOwnership{
     return ()
 end
 
+@external
+func consumeFPArtifact{
+        syscall_ptr: felt*,
+        pedersen_ptr: HashBuiltin*,
+        range_check_ptr
+    }(tokenId: Uint256):
+    alloc_locals
+    let (fp_) = getFreeProposalArtifact(tokenId)
+
+    if fp_.number == 1:
+        burn(tokenId) 
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    else:
+        let (newFP) = buildFreeProposalsFromData(fp_.room_number, fp_.number - 1)
+        freeProposalsArtifact_.write(tokenId=tokenId, value=newFP)
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    end
+    
+    return ()
+end
+
 #
 # Internal functions
 #

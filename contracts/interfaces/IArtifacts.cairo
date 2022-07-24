@@ -65,6 +65,9 @@ namespace IArtifacts:
     func mintingStep() -> (step: felt):
     end
 
+    func consumeFPArtifact(tokenId: Uint256):
+    end
+
     func getArtifactType(tokenId: Uint256) -> (res: felt):
     end
 

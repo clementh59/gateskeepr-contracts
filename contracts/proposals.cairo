@@ -93,6 +93,7 @@ func proposeFromFreeProposal{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, r
 
     # todo: consume 1 proposal
     # todo: burn if totally consumed
+    IArtifacts.consumeFPArtifact(contract_address=artifact_addr, tokenId=tokenId)
 
     _propose(room, value)
     return ()
