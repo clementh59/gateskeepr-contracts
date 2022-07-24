@@ -41,9 +41,11 @@ func __setup__{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*
     let (deployed_contracts : DeployedContracts) = test_integration.deploy_contracts()
     let artifact_address = deployed_contracts.artifact_address
     let vrf_address = deployed_contracts.vrf_address
+    let proposals_address = deployed_contracts.proposals_address
 
     %{ context.artifact_address = ids.artifact_address %}
     %{ context.vrf_address = ids.vrf_address %}
+    %{ context.proposals_address = ids.proposals_address %}
     return ()
 end
 
