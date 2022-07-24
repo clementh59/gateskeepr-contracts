@@ -16,11 +16,12 @@ from starkware.cairo.common.math import (
 )
 
 from openzeppelin.token.erc721.library import ERC721
-from openzeppelin.introspection.ERC165 import ERC165
+from openzeppelin.token.erc721.enumerable.library import ERC721Enumerable
+from openzeppelin.introspection.ERC165.library import ERC165
 from contracts.utils.ShortString import uint256_to_ss
 from contracts.utils.Array import concat_arr
 
-from openzeppelin.access.ownable import Ownable
+from openzeppelin.access.ownable.library import Ownable
 
 from contracts.utils.constants import (
     STEP_BEFORE,
@@ -162,6 +163,7 @@ func constructor{
         godModeData_len: felt, godModeData: felt*,
     ):
     ERC721.initializer(name, symbol)
+    ERC721Enumerable.initializer()
     Ownable.initializer(owner)
     vrfAddress_.write(value=vrfAddress)
     _initArtifactsType(artifactsType_len, artifactsType, 1)
@@ -182,6 +184,36 @@ end
 #
 # Getters
 #
+
+@view
+func totalSupply{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }() -> (totalSupply: Uint256):
+    let (totalSupply: Uint256) = ERC721Enumerable.total_supply()
+    return (totalSupply)
+end
+
+@view
+func tokenByIndex{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(index: Uint256) -> (tokenId: Uint256):
+    let (tokenId: Uint256) = ERC721Enumerable.token_by_index(index)
+    return (tokenId)
+end
+
+@view
+func tokenOfOwnerByIndex{
+        pedersen_ptr: HashBuiltin*,
+        syscall_ptr: felt*,
+        range_check_ptr
+    }(owner: felt, index: Uint256) -> (tokenId: Uint256):
+    let (tokenId: Uint256) = ERC721Enumerable.token_of_owner_by_index(owner, index)
+    return (tokenId)
+end
 
 @view
 func mintingStep{
@@ -455,7 +487,7 @@ func transferFrom{
         to: felt,
         tokenId: Uint256
     ):
-    ERC721.transfer_from(from_, to, tokenId)
+    ERC721Enumerable.transfer_from(from_, to, tokenId)
     return ()
 end
 
@@ -471,7 +503,7 @@ func safeTransferFrom{
         data_len: felt,
         data: felt*
     ):
-    ERC721.safe_transfer_from(from_, to, tokenId, data_len, data)
+    ERC721Enumerable.safe_transfer_from(from_, to, tokenId, data_len, data)
     return ()
 end
 
@@ -510,7 +542,7 @@ func burn{
         syscall_ptr: felt*,
         range_check_ptr
     }(tokenId: Uint256):
-    ERC721._burn(tokenId)
+    ERC721Enumerable._burn(tokenId)
     return ()
 end
 
@@ -582,7 +614,7 @@ func _mint{
     let (tokenIdFelt) = _getAvailableTokenAtIndex(remainder, numAvailableToken)
     # we do remainder + 1 because the first tokenId is 1 and not 0
     let tokenId: Uint256 = Uint256(tokenIdFelt + 1, 0)
-    ERC721._mint(to, tokenId)
+    ERC721Enumerable._mint(to, tokenId)
 
     numAvailableToken_.write(value=numAvailableToken-1)
 
