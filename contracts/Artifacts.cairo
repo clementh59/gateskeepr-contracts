@@ -134,6 +134,10 @@ end
 func godModeArtifact_(tokenId: Uint256) -> (type: GodModeArtifact):
 end
 
+@storage_var
+func erc20TokenAddress_() -> (address: felt):
+end
+
 #
 # Constructor
 #
@@ -149,6 +153,7 @@ func constructor{
         owner: felt,
         vrfAddress: felt,
         maxSupply: felt,
+        erc20TokenAddress: felt,
         baseUri_len: felt, baseUri: felt*, 
         uriSuffix: felt,
         artifactsType_len: felt,
@@ -166,6 +171,7 @@ func constructor{
     ERC721Enumerable.initializer()
     Ownable.initializer(owner)
     vrfAddress_.write(value=vrfAddress)
+    erc20TokenAddress_.write(value=erc20TokenAddress)
     _initArtifactsType(artifactsType_len, artifactsType, 1)
     maxSupply_.write(value=maxSupply)
     numAvailableToken_.write(value=maxSupply)

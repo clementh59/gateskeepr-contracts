@@ -38,7 +38,7 @@ namespace test_integration:
         %{
             ids.token_address = deploy_contract(
             "./contracts/ERC20.cairo",
-            [0x1 0x1 0x1 1000000000 0 ids.CALLER_ADDRESS]).contract_address
+            [0x1, 0x1, 0x1, 1000000000, 0, ids.CALLER_ADDRESS]).contract_address
         %}
 
         %{
