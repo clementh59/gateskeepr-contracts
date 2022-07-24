@@ -38,6 +38,9 @@ namespace IArtifacts:
     func mint(to: felt, amount: felt):
     end
 
+    func burn(tokenId: Uint256):
+    end
+
     func approve(approved: felt, tokenId: Uint256):
     end
 
