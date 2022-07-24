@@ -8,7 +8,7 @@ from tests.constants import (
     ADMIN,
     TD,
 )
-from starkware.cairo.common.uint256 import Uint256
+from starkware.cairo.common.uint256 import (Uint256, uint256_add)
 from contracts.utils.constants import (
     MAX_MINT_PER_ROW,
     R,
@@ -70,9 +70,21 @@ func test_should_be_able_to_propose_for_free_with_valid_artifact_for_this_room{s
     
     %{ stop_prank_callable = start_prank(caller_address=ids.CALLER_ADDRESS, target_contract_address=ids.deployed_contracts.proposals_address)%}
 
+    %{
+        value_val = load(ids.deployed_contracts.artifact_address, "freeProposalsArtifact_", "FreeProposalsArtifact", key=[ids.TD.FP_T1,0])
+        print(value_val)
+        assert value_val == [2, 2]
+    %}
+
     IProposals.proposeFromFreeProposal(contract_address=deployed_contracts.proposals_address, room=R.ROOM_2, value=0x123, tokenId=Uint256(TD.FP_T1, 0))
 
     %{ expect_events({"name": "Proposal", "data": [ids.CALLER_ADDRESS, ids.R.ROOM_2, 0x123]}) %}
+
+    %{
+        value_val = load(ids.deployed_contracts.artifact_address, "freeProposalsArtifact_", "FreeProposalsArtifact", key=[ids.TD.FP_T1,0])
+        print(value_val)
+        assert value_val == [2, 1]
+    %}
 
     %{ stop_prank_callable() %}
     return ()
@@ -127,10 +139,34 @@ end
 func test_should_not_be_able_to_propose_for_free_with_consumed_artifact{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
     alloc_locals
     let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
-    
+
     %{ stop_prank_callable = start_prank(caller_address=ids.CALLER_ADDRESS, target_contract_address=ids.deployed_contracts.proposals_address)%}
 
-    %{ expect_revert(error_message="The artifact is consumed") %}
+    # 1. Let's do the last proposal available with T1
+    let (balance) = IArtifacts.balanceOf(contract_address=deployed_contracts.artifact_address, owner=CALLER_ADDRESS)
+
+    IProposals.proposeFromFreeProposal(contract_address=deployed_contracts.proposals_address, room=R.ROOM_2, value=0x123, tokenId=Uint256(TD.FP_T1, 0))
+
+    %{
+        value_val = load(ids.deployed_contracts.artifact_address, "freeProposalsArtifact_", "FreeProposalsArtifact", key=[ids.TD.FP_T1,0])
+        assert value_val == [2, 1]
+    %}
+
+    IProposals.proposeFromFreeProposal(contract_address=deployed_contracts.proposals_address, room=R.ROOM_2, value=0x123, tokenId=Uint256(TD.FP_T1, 0))
+
+    %{
+        value_val = load(ids.deployed_contracts.artifact_address, "freeProposalsArtifact_", "FreeProposalsArtifact", key=[ids.TD.FP_T1,0])
+        assert value_val == [2, 0]
+    %}
+
+    # the token should now be burnt
+    let (balance2) = IArtifacts.balanceOf(contract_address=deployed_contracts.artifact_address, owner=CALLER_ADDRESS)
+    let (b2, _) = uint256_add(Uint256(1,0), balance2)
+    assert balance = b2
+
+    # 2. let's try to use it again
+    
+    %{ expect_revert(error_message="ERC721: owner query for nonexistent token") %}
     IProposals.proposeFromFreeProposal(contract_address=deployed_contracts.proposals_address, room=R.ROOM_2, value=0x123, tokenId=Uint256(TD.FP_T1, 0))
 
     %{ stop_prank_callable() %}

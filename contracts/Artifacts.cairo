@@ -510,7 +510,6 @@ func burn{
         syscall_ptr: felt*,
         range_check_ptr
     }(tokenId: Uint256):
-    ERC721.assert_only_token_owner(tokenId)
     ERC721._burn(tokenId)
     return ()
 end
@@ -550,12 +549,13 @@ func consumeFPArtifact{
         tempvar pedersen_ptr = pedersen_ptr
         tempvar range_check_ptr = range_check_ptr
     else:
-        let (newFP) = buildFreeProposalsFromData(fp_.room_number, fp_.number - 1)
-        freeProposalsArtifact_.write(tokenId=tokenId, value=newFP)
         tempvar syscall_ptr = syscall_ptr
         tempvar pedersen_ptr = pedersen_ptr
         tempvar range_check_ptr = range_check_ptr
     end
+
+    let (newFP) = buildFreeProposalsFromData(fp_.room_number, fp_.number - 1)
+    freeProposalsArtifact_.write(tokenId=tokenId, value=newFP)
     
     return ()
 end

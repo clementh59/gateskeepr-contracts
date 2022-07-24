@@ -1,5 +1,7 @@
 %lang starknet
-from starkware.cairo.common.math import assert_nn
+from starkware.cairo.common.math import (
+    assert_nn, assert_not_zero
+)
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from openzeppelin.token.erc20.library import ERC20
 from starkware.starknet.common.syscalls import (
@@ -73,6 +75,8 @@ func proposeFromFreeProposal{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, r
         room: felt, value: felt, tokenId: Uint256):
     let (caller) = get_caller_address()
     let (artifact_addr) = artifactContractAddress_.read()
+
+    # if this call revert, it means that the token has been burned, or hasn't been minted yet
     let (owner) = IArtifacts.ownerOf(contract_address=artifact_addr, tokenId=tokenId)
     let (fpArtifact : FreeProposalsArtifact) = IArtifacts.getFreeProposalArtifact(contract_address=artifact_addr, tokenId=tokenId)
 
@@ -86,13 +90,6 @@ func proposeFromFreeProposal{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, r
         assert ((room - fpArtifact.room_number) * (R.ROOM_ALL - fpArtifact.room_number)) = 0
     end
 
-    # we check that the artifact hasn't been totally consumed
-    with_attr error_message("The artifact is consumed"):
-        assert_nn(fpArtifact.number)
-    end
-
-    # todo: consume 1 proposal
-    # todo: burn if totally consumed
     IArtifacts.consumeFPArtifact(contract_address=artifact_addr, tokenId=tokenId)
 
     _propose(room, value)
