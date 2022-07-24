@@ -38,7 +38,7 @@ from contracts.interfaces.IVRF import IVRF
 
 @external
 func __setup__{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
-    let (deployed_contracts : DeployedContracts) = test_integration.deploy_contracts()
+    let (deployed_contracts : DeployedContracts) = test_integration.deploy_contracts(maxSupply=100)
     let artifact_address = deployed_contracts.artifact_address
     let vrf_address = deployed_contracts.vrf_address
     let proposals_address = deployed_contracts.proposals_address
@@ -51,7 +51,7 @@ end
 
 @external
 func test_should_set_artifacts_type_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
-    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context(maxSupply=100)
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
 
     check_if_artifacts_type_are_correct(deployed_contracts.artifact_address)
 
