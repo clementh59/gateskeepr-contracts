@@ -5,6 +5,7 @@ from contracts.utils.constants import (
 from contracts.utils.ArtifactTypeUtils import TYPES
 
 const CALLER_ADDRESS = 0x123
+const CALLER_2_ADDRESS = 0x124
 const ADMIN = 0x27
 const ARTIFACTS_SYMBOL = 1095914566
 const ARTIFACTS_NAME = 1204970811966366110803
@@ -17,7 +18,7 @@ namespace TD:
     const TOKEN_URI_SUFFIX = 779120231
 
     # NUM token def
-    const NUM_METADATA_DEF = 5
+    const NUM_METADATA_DEF = 17
 
     const T1_TYPE = TYPES.CHUCKY
     const CHUCKY_T1 = 1
@@ -106,7 +107,7 @@ namespace TD:
     # Free proposals
     const NUMBER_OF_FP_ARTIFACT = 2
     const FP_T1_ROOM = R.ROOM_2
-    const FP_T1_NUMBER = 10
+    const FP_T1_NUMBER = 2
     const FP_T2_ROOM = R.ROOM_ALL
     const FP_T2_NUMBER = 42
 

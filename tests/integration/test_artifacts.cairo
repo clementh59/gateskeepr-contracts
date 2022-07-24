@@ -51,7 +51,7 @@ end
 
 @external
 func test_should_set_artifacts_type_correctly{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
-    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context(maxSupply=100)
 
     check_if_artifacts_type_are_correct(deployed_contracts.artifact_address)
 

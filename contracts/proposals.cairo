@@ -70,7 +70,7 @@ end
 # When an user uses a FP NFT to make a proposal
 @external
 func proposeFromFreeProposal{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        room : felt, value: felt, tokenId: Uint256):
+        room: felt, value: felt, tokenId: Uint256):
     let (caller) = get_caller_address()
     let (artifact_addr) = artifactContractAddress_.read()
     let (owner) = IArtifacts.ownerOf(contract_address=artifact_addr, tokenId=tokenId)
@@ -90,6 +90,9 @@ func proposeFromFreeProposal{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, r
     with_attr error_message("The artifact is consumed"):
         assert_nn(fpArtifact.number)
     end
+
+    # todo: consume 1 proposal
+    # todo: burn if totally consumed
 
     _propose(room, value)
     return ()

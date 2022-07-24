@@ -17,7 +17,7 @@ struct DeployedContracts:
 end
 
 namespace test_integration:
-    func deploy_contracts{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (
+    func deploy_contracts{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(maxSupply: felt) -> (
         deployed_contracts : DeployedContracts
     ):
         alloc_locals
@@ -37,7 +37,7 @@ namespace test_integration:
             ids.artifact_address = deploy_contract(
             "./contracts/Artifacts.cairo",
             # name, symbol, owner, vrfAddress
-            [ids.ARTIFACTS_NAME, ids.ARTIFACTS_SYMBOL, ids.ADMIN, ids.vrf_address, ids.MAX_SUPPLY,
+            [ids.ARTIFACTS_NAME, ids.ARTIFACTS_SYMBOL, ids.ADMIN, ids.vrf_address, ids.maxSupply,
             # baseUri_len: felt, baseUri: felt*, 
             ids.TD.BASE_URI_LEN, ids.TD.BASE_URI_1,
             # uriSuffix: felt,
@@ -45,7 +45,7 @@ namespace test_integration:
             #types_len
             ids.TD.NUM_METADATA_DEF,
             #types
-            ids.TD.T1_TYPE, ids.TD.T2_TYPE, ids.TD.T3_TYPE, ids.TD.T4_TYPE, ids.TD.T5_TYPE,
+            ids.TD.T1_TYPE, ids.TD.T2_TYPE, ids.TD.T3_TYPE, ids.TD.T4_TYPE, ids.TD.T5_TYPE, ids.TD.T6_TYPE, ids.TD.T7_TYPE, ids.TD.T8_TYPE, ids.TD.T9_TYPE, ids.TD.T10_TYPE, ids.TD.T11_TYPE, ids.TD.T12_TYPE, ids.TD.T13_TYPE, ids.TD.T14_TYPE, ids.TD.T15_TYPE, ids.TD.T16_TYPE, ids.TD.T17_TYPE,
             # chuckyInfo_len
             ids.TD.NUMBER_OF_CHUCKY * 2,
             # chuckyInfo

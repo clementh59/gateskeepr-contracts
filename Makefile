@@ -23,6 +23,9 @@ testFile:
 test_artifact:
 	make testFile path=integration/test_artifacts.cairo
 
+test_proposals:
+	make testFile path=integration/test_proposals.cairo
+
 clean:
 	rm -rf ./build
 

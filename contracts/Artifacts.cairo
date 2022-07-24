@@ -328,6 +328,7 @@ func getChuckyArtifact{
         pedersen_ptr : HashBuiltin*,
         range_check_ptr
     }(tokenId: Uint256) -> (chucky: ChuckyArtifact):
+    assert_type_is(tokenId, TYPES.CHUCKY)
     let (res) = chuckyArtifact_.read(tokenId=tokenId)
     return (res)
 end
@@ -338,6 +339,7 @@ func getRoomArtifact{
         pedersen_ptr : HashBuiltin*,
         range_check_ptr
     }(tokenId: Uint256) -> (room: RoomArtifact):
+    assert_type_is(tokenId, TYPES.ROOM)
     let (res) = roomArtifact_.read(tokenId=tokenId)
     return (res)
 end
@@ -348,6 +350,7 @@ func getOrbArtifact{
         pedersen_ptr : HashBuiltin*,
         range_check_ptr
     }(tokenId: Uint256) -> (orb: OrbArtifact):
+    assert_type_is(tokenId, TYPES.ORB_OF_OSUVOX)
     let (res) = orbArtifact_.read(tokenId=tokenId)
     return (res)
 end
@@ -358,6 +361,7 @@ func getCataclystArtifact{
         pedersen_ptr : HashBuiltin*,
         range_check_ptr
     }(tokenId: Uint256) -> (cataclyst: CataclystArtifact):
+    assert_type_is(tokenId, TYPES.CATACLYST)
     let (res) = cataclystArtifact_.read(tokenId=tokenId)
     return (res)
 end
@@ -368,6 +372,7 @@ func getHackEyeArtifact{
         pedersen_ptr : HashBuiltin*,
         range_check_ptr
     }(tokenId: Uint256) -> (hackEye: HackEyeArtifact):
+    assert_type_is(tokenId, TYPES.HACK_EYE)
     let (res) = hackEyeArtifact_.read(tokenId=tokenId)
     return (res)
 end
@@ -378,6 +383,7 @@ func getCopycatArtifact{
         pedersen_ptr : HashBuiltin*,
         range_check_ptr
     }(tokenId: Uint256) -> (copycat: CopycatArtifact):
+    assert_type_is(tokenId, TYPES.COPYCAT)
     let (res) = copycatArtifact_.read(tokenId=tokenId)
     return (res)
 end
@@ -388,6 +394,7 @@ func getFreeProposalArtifact{
         pedersen_ptr : HashBuiltin*,
         range_check_ptr
     }(tokenId: Uint256) -> (freeProposals: FreeProposalsArtifact):
+    assert_type_is(tokenId, TYPES.FREE_PROPOSALS)
     let (res) = freeProposalsArtifact_.read(tokenId=tokenId)
     return (res)
 end
@@ -398,6 +405,7 @@ func getGodModeArtifact{
         pedersen_ptr : HashBuiltin*,
         range_check_ptr
     }(tokenId: Uint256) -> (godMode: GodModeArtifact):
+    assert_type_is(tokenId, TYPES.GOD_MODE)
     let (res) = godModeArtifact_.read(tokenId=tokenId)
     return (res)
 end
@@ -890,4 +898,20 @@ func buildUriInfoFromArtifact{
     end
 
     return (0)
+end
+
+#
+# Custom asserts
+#
+
+func assert_type_is{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr
+    }(tokenId: Uint256, type: felt):
+    let (type_) = artifactType_.read(tokenId)
+    with_attr error_message("The tokenId doesn't corresponds to this type of artifact"):
+        assert type_ = type
+    end
+    return ()
 end
