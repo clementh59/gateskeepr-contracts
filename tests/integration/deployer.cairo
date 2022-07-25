@@ -15,6 +15,7 @@ struct DeployedContracts:
     member artifact_address : felt
     member proposals_address : felt
     member vrf_address : felt
+    member token_address: felt
 end
 
 namespace test_integration:
@@ -85,14 +86,15 @@ namespace test_integration:
         %}
 
         %{
-            ids.proposals_address = deploy_contract("./contracts/Proposals.cairo", [ ids.artifact_address ] ).contract_address
+            ids.proposals_address = deploy_contract("./contracts/Proposals.cairo", [ ids.artifact_address, ids.token_address ] ).contract_address
         %}
 
         # Replace mocks with deployed contract addresses here
         let deployed_contracts = DeployedContracts(
             artifact_address=artifact_address,
             proposals_address=proposals_address,
-            vrf_address=vrf_address
+            vrf_address=vrf_address,
+            token_address=token_address
         )
         return (deployed_contracts)
     end
@@ -100,15 +102,18 @@ namespace test_integration:
     func get_deployed_contracts_from_context() -> (deployed_contracts : DeployedContracts):
         tempvar artifact_address
         tempvar vrf_address
+        tempvar token_address
         tempvar proposals_address
         %{ ids.artifact_address = context.artifact_address %}
         %{ ids.vrf_address = context.vrf_address %}
         %{ ids.proposals_address = context.proposals_address %}
+        %{ ids.token_address = context.token_address %}
 
         let deployed_contracts = DeployedContracts(
             artifact_address=artifact_address,
             proposals_address=proposals_address,
-            vrf_address=vrf_address
+            vrf_address=vrf_address,
+            token_address=token_address
         )
         return (deployed_contracts)
     end

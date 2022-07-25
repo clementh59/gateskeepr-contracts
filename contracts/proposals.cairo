@@ -3,15 +3,16 @@ from starkware.cairo.common.math import (
     assert_nn, assert_not_zero
 )
 from starkware.cairo.common.cairo_builtins import HashBuiltin
-from openzeppelin.token.erc20.library import ERC20
 from starkware.starknet.common.syscalls import (
     get_caller_address,
+    get_contract_address,
 )
 from starkware.cairo.common.uint256 import (
     Uint256,
     uint256_add
 )
 from contracts.interfaces.IArtifacts import IArtifacts
+from contracts.interfaces.IERC20 import IERC20
 from contracts.utils.ArtifactTypeUtils import (
     ChuckyArtifact,
     RoomArtifact,
@@ -24,6 +25,7 @@ from contracts.utils.ArtifactTypeUtils import (
 )
 from contracts.utils.constants import (
     R,
+    PROPOSAL_PRICE
 )
 
 #
@@ -42,6 +44,10 @@ end
 func artifactContractAddress_() -> (address : felt):
 end
 
+@storage_var
+func erc20ContractAddr_() -> (address : felt):
+end
+
 # todo: returns all the proposals as a list?
 @storage_var
 func proposals(account: felt) -> (number : felt):
@@ -53,8 +59,9 @@ end
 
 @constructor
 func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    artifactContractAddress: felt):
+    artifactContractAddress: felt, erc20Addr: felt):
     artifactContractAddress_.write(value=artifactContractAddress)
+    erc20ContractAddr_.write(value=erc20Addr)
     return ()
 end
 
@@ -99,7 +106,16 @@ end
 @external
 func propose{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
         room : felt, value: felt):
-    # todo: pay here
+    let (erc20Addr) = erc20ContractAddr_.read()
+    let (caller) = get_caller_address()
+    let (contractAddr) = get_contract_address()
+    let amount = Uint256(PROPOSAL_PRICE,0)
+    IERC20.transferFrom(
+        contract_address=erc20Addr,
+        sender=caller,
+        recipient=contractAddr,
+        amount=amount
+    )
     _propose(room, value)
     return ()
 end

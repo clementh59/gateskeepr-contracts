@@ -24,3 +24,5 @@ namespace R:
 end
 
 const STR_UNDERSCORE = 95
+
+const PROPOSAL_PRICE = 1

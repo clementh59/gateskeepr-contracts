@@ -1,6 +1,7 @@
 %lang starknet
 from contracts.interfaces.IProposals import IProposals
 from contracts.interfaces.IArtifacts import IArtifacts
+from contracts.interfaces.IERC20 import IERC20
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from tests.constants import (
     CALLER_ADDRESS,
@@ -21,10 +22,12 @@ func __setup__{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*
     let artifact_address = deployed_contracts.artifact_address
     let vrf_address = deployed_contracts.vrf_address
     let proposals_address = deployed_contracts.proposals_address
+    let token_address = deployed_contracts.token_address
 
     %{ context.artifact_address = ids.artifact_address %}
     %{ context.vrf_address = ids.vrf_address %}
     %{ context.proposals_address = ids.proposals_address %}
+    %{ context.token_address = ids.token_address %}
     
     %{ stop_prank_callable = start_prank(caller_address=ids.ADMIN, target_contract_address=ids.deployed_contracts.artifact_address)%}
 
@@ -44,21 +47,67 @@ func __setup__{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*
     return ()
 end
 
-# @external
-# func test_should_be_able_to_propose{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
-#     %{ stop_prank_callable = start_prank(ids.CALLER_ADDRESS) %}
-#     let (result_before) = proposals.read(account=CALLER_ADDRESS)
-#     assert result_before = 0
+#
+# Test - regular propositions
+#
 
-#     propose(3, 42)
+@external
+func test_should_be_able_to_propose{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    alloc_locals
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+    
+    %{ stop_prank_callable = start_prank(caller_address=ids.CALLER_ADDRESS, target_contract_address=ids.deployed_contracts.token_address)%}
 
-#     %{ expect_events({"name": "Proposal", "data": [ids.CALLER_ADDRESS, 3, 42]}) %}
-#     let (result_after) = proposals.read(account=CALLER_ADDRESS)
-#     assert result_after = 1
+    IERC20.approve(contract_address=deployed_contracts.token_address, spender=deployed_contracts.proposals_address, amount=Uint256(10,0))
 
-#     %{ stop_prank_callable() %}
-#     return ()
-# end
+    %{ stop_prank_callable() %}
+    %{ stop_prank_callable = start_prank(caller_address=ids.CALLER_ADDRESS, target_contract_address=ids.deployed_contracts.proposals_address)%}
+
+    IProposals.propose(deployed_contracts.proposals_address, 3, 42)
+
+    %{ expect_events({"name": "Proposal", "data": [ids.CALLER_ADDRESS, 3, 42]}) %}
+
+
+    %{ stop_prank_callable() %}
+
+    return ()
+end
+
+@external
+func test_should_not_be_able_to_propose_if_spender_didnt_approve{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    alloc_locals
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+    
+    %{ stop_prank_callable = start_prank(caller_address=ids.CALLER_2_ADDRESS, target_contract_address=ids.deployed_contracts.proposals_address)%}
+
+    %{ expect_revert(error_message="ERC20: insufficient allowance") %}
+    IProposals.propose(deployed_contracts.proposals_address, 2, 42)
+
+    %{ stop_prank_callable() %}
+
+    return ()
+end
+
+@external
+func test_should_not_be_able_to_propose_if_spender_doesnt_have_enough_funds{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    alloc_locals
+    let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
+    
+    %{ stop_prank_callable = start_prank(caller_address=ids.CALLER_2_ADDRESS, target_contract_address=ids.deployed_contracts.token_address)%}
+
+    IERC20.approve(contract_address=deployed_contracts.token_address, spender=deployed_contracts.proposals_address, amount=Uint256(1,1))
+
+    %{ stop_prank_callable() %}
+    %{ stop_prank_callable = start_prank(caller_address=ids.CALLER_2_ADDRESS, target_contract_address=ids.deployed_contracts.proposals_address)%}
+
+    %{ expect_revert(error_message="ERC20: transfer amount exceeds balance") %}
+    IProposals.propose(deployed_contracts.proposals_address, 2, 42)
+
+
+    %{ stop_prank_callable() %}
+
+    return ()
+end
 
 #
 # Test - Proposal using Free Proposal artifacts
@@ -72,7 +121,6 @@ func test_should_be_able_to_propose_for_free_with_valid_artifact_for_this_room{s
 
     %{
         value_val = load(ids.deployed_contracts.artifact_address, "freeProposalsArtifact_", "FreeProposalsArtifact", key=[ids.TD.FP_T1,0])
-        print(value_val)
         assert value_val == [2, 2]
     %}
 
@@ -82,7 +130,6 @@ func test_should_be_able_to_propose_for_free_with_valid_artifact_for_this_room{s
 
     %{
         value_val = load(ids.deployed_contracts.artifact_address, "freeProposalsArtifact_", "FreeProposalsArtifact", key=[ids.TD.FP_T1,0])
-        print(value_val)
         assert value_val == [2, 1]
     %}
 

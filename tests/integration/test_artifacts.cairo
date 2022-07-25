@@ -46,6 +46,7 @@ func __setup__{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*
     %{ context.artifact_address = ids.artifact_address %}
     %{ context.vrf_address = ids.vrf_address %}
     %{ context.proposals_address = ids.proposals_address %}
+    %{ context.token_address = ids.token_address %}
     return ()
 end
 

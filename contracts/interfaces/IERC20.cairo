@@ -28,6 +28,9 @@ namespace IERC20:
     func transfer(recipient: felt, amount: Uint256) -> (success: felt):
     end
 
+    func increaseAllowance(spender: felt, added_value: Uint256) -> (success: felt):
+    end
+
     func transferFrom(
             sender: felt,
             recipient: felt,
