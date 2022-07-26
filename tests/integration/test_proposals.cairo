@@ -19,16 +19,19 @@ from tests.integration.deployer import (test_integration, DeployedContracts)
 
 @external
 func __setup__{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
-    let (deployed_contracts : DeployedContracts) = test_integration.deploy_contracts(maxSupply=17)
+    let (deployed_contracts : DeployedContracts) = test_integration.deploy_contracts(maxSupply=100)
     let artifact_address = deployed_contracts.artifact_address
     let vrf_address = deployed_contracts.vrf_address
     let proposals_address = deployed_contracts.proposals_address
-    let token_address = deployed_contracts.token_address
+    let protocol_treasury_address = deployed_contracts.protocol_treasury_address
+    let game_treasury_address = deployed_contracts.game_treasury_address
 
     %{ context.artifact_address = ids.artifact_address %}
     %{ context.vrf_address = ids.vrf_address %}
     %{ context.proposals_address = ids.proposals_address %}
     %{ context.token_address = ids.token_address %}
+    %{ context.game_treasury_address = ids.game_treasury_address%}
+    %{ context.protocol_treasury_address = ids.protocol_treasury_address%}
     
     %{ stop_prank_callable = start_prank(caller_address=ids.ADMIN, target_contract_address=ids.deployed_contracts.artifact_address)%}
 

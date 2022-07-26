@@ -53,15 +53,26 @@ end
 func proposals(account: felt) -> (number : felt):
 end
 
+@storage_var
+func protocolTreasuryContractAddress_() -> (address : felt):
+end
+
+@storage_var
+func seasonTreasuryContractAddress_() -> (address : felt):
+end
+
+
 #
 # Constructor
 #
 
 @constructor
 func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    artifactContractAddress: felt, erc20Addr: felt):
+    artifactContractAddress: felt, erc20Addr: felt, protocolTreasuryContractAddress: felt, seasonTreasuryContractAddress: felt):
     artifactContractAddress_.write(value=artifactContractAddress)
     erc20ContractAddr_.write(value=erc20Addr)
+    protocolTreasuryContractAddress_.write(value=protocolTreasuryContractAddress)
+    seasonTreasuryContractAddress_.write(value=seasonTreasuryContractAddress)
     return ()
 end
 

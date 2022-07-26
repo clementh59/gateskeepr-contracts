@@ -16,6 +16,8 @@ struct DeployedContracts:
     member proposals_address : felt
     member vrf_address : felt
     member token_address: felt
+    member game_treasury_address: felt
+    member protocol_treasury_address: felt
 end
 
 namespace test_integration:
@@ -28,18 +30,35 @@ namespace test_integration:
         local vrf_address : felt
         local proposals_address : felt
         local token_address : felt
+        local protocol_treasury_address: felt
+        local game_treasury_address: felt
+
+        %{
+            ids.token_address = deploy_contract(
+            "./contracts/ERC20.cairo",
+            [0x1, 0x1, 0x1, 1000000000, 0, ids.CALLER_ADDRESS]).contract_address
+        %}
+
+        %{
+            ids.protocol_treasury_address = deploy_contract(
+            "./contracts/treasuries/ProtocolTreasury.cairo",
+            # owner, erc20
+            [ids.ADMIN, ids.token_address]).contract_address
+        %}
+
+        %{
+            ids.game_treasury_address = deploy_contract(
+            # todo
+            "./contracts/treasuries/ProtocolTreasury.cairo",
+            # owner
+            [ids.ADMIN]).contract_address
+        %}
 
         %{
             ids.vrf_address = deploy_contract(
             "./contracts/vrf/pseudo-random.cairo",
             # seed
             [0x233f9e9aff81a8edf20a0a8d97600f3b2c4]).contract_address
-        %}
-
-        %{
-            ids.token_address = deploy_contract(
-            "./contracts/ERC20.cairo",
-            [0x1, 0x1, 0x1, 1000000000, 0, ids.CALLER_ADDRESS]).contract_address
         %}
 
         %{
@@ -86,7 +105,7 @@ namespace test_integration:
         %}
 
         %{
-            ids.proposals_address = deploy_contract("./contracts/Proposals.cairo", [ ids.artifact_address, ids.token_address ] ).contract_address
+            ids.proposals_address = deploy_contract("./contracts/Proposals.cairo", [ ids.artifact_address, ids.token_address, ids.protocol_treasury_address, ids.game_treasury_address ] ).contract_address
         %}
 
         # Replace mocks with deployed contract addresses here
@@ -94,7 +113,9 @@ namespace test_integration:
             artifact_address=artifact_address,
             proposals_address=proposals_address,
             vrf_address=vrf_address,
-            token_address=token_address
+            token_address=token_address,
+            game_treasury_address=game_treasury_address,
+            protocol_treasury_address=protocol_treasury_address
         )
         return (deployed_contracts)
     end
@@ -104,6 +125,8 @@ namespace test_integration:
         tempvar vrf_address
         tempvar token_address
         tempvar proposals_address
+        tempvar protocol_treasury_address
+        tempvar game_treasury_address
         %{ ids.artifact_address = context.artifact_address %}
         %{ ids.vrf_address = context.vrf_address %}
         %{ ids.proposals_address = context.proposals_address %}
@@ -113,7 +136,9 @@ namespace test_integration:
             artifact_address=artifact_address,
             proposals_address=proposals_address,
             vrf_address=vrf_address,
-            token_address=token_address
+            token_address=token_address,
+            game_treasury_address=game_treasury_address,
+            protocol_treasury_address=protocol_treasury_address
         )
         return (deployed_contracts)
     end

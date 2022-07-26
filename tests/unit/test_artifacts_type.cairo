@@ -100,10 +100,3 @@ func test_build_god_mode_from_data_artifact{syscall_ptr : felt*, range_check_ptr
     assert art.room_number = 5
     return ()
 end
-
-@external 
-func test_2():
-    let (res) = buildUriInfoFrom2Params(48, 1, 2)
-    %{print(ids.res)%}
-    return ()
-end
