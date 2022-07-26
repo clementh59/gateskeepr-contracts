@@ -37,7 +37,7 @@ func __setup__{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*
     # we don't care about proposals address and token here here
     %{ context.proposals_address = 0x123 %}
     %{ context.artifact_address = 0x123 %}
-    %{ context.game_treasury_address = 0x123 %}
+    %{ context.season_treasury_address = 0x123 %}
     return ()
 end
 
@@ -46,7 +46,7 @@ func test_deposit_and_withdraw{syscall_ptr : felt*, range_check_ptr, pedersen_pt
     alloc_locals
     let (deployed_contracts : DeployedContracts) = test_integration.get_deployed_contracts_from_context()
 
-    %{ stop_prank_callable = start_prank(caller_address=ids.CALLER_ADDRESS, target_contract_address=ids.deployed_contracts.proposals_address)%}
+    %{ stop_prank_callable = start_prank(caller_address=ids.CALLER_ADDRESS, target_contract_address=ids.deployed_contracts.token_address)%}
 
     let amount = Uint256(1111,0)
 
@@ -58,9 +58,8 @@ func test_deposit_and_withdraw{syscall_ptr : felt*, range_check_ptr, pedersen_pt
     IProtocolTreasury.withdraw(deployed_contracts.protocol_treasury_address)
 
     let (balanceOfContractAfter) = IERC20.balanceOf(deployed_contracts.token_address, deployed_contracts.protocol_treasury_address)
-    let (balanceOfOwner) = IERC20.balanceOf(deployed_contracts.token_address, deployed_contracts.protocol_treasury_address)
+    let (balanceOfOwner) = IERC20.balanceOf(deployed_contracts.token_address, ADMIN)
 
-    assert balanceOfContractAfter = Uint256(0,0)
     assert balanceOfOwner = amount
     
     %{ stop_prank_callable() %}

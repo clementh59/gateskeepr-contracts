@@ -91,7 +91,7 @@ func __setup__{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*
     # we don't care about proposals address and token here here
     %{ context.proposals_address = 0x123 %}
     %{ context.token_address = 0x123 %}
-    %{ context.game_treasury_address = 0x123 %}
+    %{ context.season_treasury_address = 0x123 %}
     %{ context.protocol_treasury_address = 0x123 %}
     return ()
 end

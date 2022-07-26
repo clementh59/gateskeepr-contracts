@@ -43,13 +43,13 @@ func __setup__{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*
     let vrf_address = deployed_contracts.vrf_address
     let proposals_address = deployed_contracts.proposals_address
     let protocol_treasury_address = deployed_contracts.protocol_treasury_address
-    let game_treasury_address = deployed_contracts.game_treasury_address
+    let season_treasury_address = deployed_contracts.season_treasury_address
 
     %{ context.artifact_address = ids.artifact_address %}
     %{ context.vrf_address = ids.vrf_address %}
     %{ context.proposals_address = ids.proposals_address %}
     %{ context.token_address = ids.token_address %}
-    %{ context.game_treasury_address = ids.game_treasury_address%}
+    %{ context.season_treasury_address = ids.season_treasury_address%}
     %{ context.protocol_treasury_address = ids.protocol_treasury_address%}
     return ()
 end

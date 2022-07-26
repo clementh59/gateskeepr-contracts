@@ -16,7 +16,7 @@ struct DeployedContracts:
     member proposals_address : felt
     member vrf_address : felt
     member token_address: felt
-    member game_treasury_address: felt
+    member season_treasury_address: felt
     member protocol_treasury_address: felt
 end
 
@@ -31,7 +31,7 @@ namespace test_integration:
         local proposals_address : felt
         local token_address : felt
         local protocol_treasury_address: felt
-        local game_treasury_address: felt
+        local season_treasury_address: felt
 
         %{
             ids.token_address = deploy_contract(
@@ -47,7 +47,7 @@ namespace test_integration:
         %}
 
         %{
-            ids.game_treasury_address = deploy_contract(
+            ids.season_treasury_address = deploy_contract(
             # todo
             "./contracts/treasuries/ProtocolTreasury.cairo",
             # owner
@@ -114,7 +114,7 @@ namespace test_integration:
             proposals_address=proposals_address,
             vrf_address=vrf_address,
             token_address=token_address,
-            game_treasury_address=game_treasury_address,
+            season_treasury_address=season_treasury_address,
             protocol_treasury_address=protocol_treasury_address
         )
         return (deployed_contracts)
@@ -126,18 +126,20 @@ namespace test_integration:
         tempvar token_address
         tempvar proposals_address
         tempvar protocol_treasury_address
-        tempvar game_treasury_address
+        tempvar season_treasury_address
         %{ ids.artifact_address = context.artifact_address %}
         %{ ids.vrf_address = context.vrf_address %}
         %{ ids.proposals_address = context.proposals_address %}
         %{ ids.token_address = context.token_address %}
+        %{ ids.season_treasury_address = context.season_treasury_address %}
+        %{ ids.protocol_treasury_address = context.protocol_treasury_address %}
 
         let deployed_contracts = DeployedContracts(
             artifact_address=artifact_address,
             proposals_address=proposals_address,
             vrf_address=vrf_address,
             token_address=token_address,
-            game_treasury_address=game_treasury_address,
+            season_treasury_address=season_treasury_address,
             protocol_treasury_address=protocol_treasury_address
         )
         return (deployed_contracts)
