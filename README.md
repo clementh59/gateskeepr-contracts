@@ -1,6 +1,6 @@
 # Gateskeepr contracts
 
-A description of the game is available ![here](docs/GameDocumentation.md).
+A description of the game is available [here](docs/GameDocumentation.md).
 
 ## Install
 
