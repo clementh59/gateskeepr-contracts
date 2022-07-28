@@ -1,5 +1,7 @@
 # Gateskeepr contracts
 
+A description of the game is available ![here](docs/GameDocumentation.md).
+
 ## Install
 
 ```shell
