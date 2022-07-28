@@ -71,12 +71,12 @@ Here is how it works:
 
 In order to create a semi-public / private guild, you will need to have a guild NFT. Which means a guild is represented as a NFT, and can be sold, transferred, ...
 
-## Is there possible to have a diagram that sums up how proposal works and where the money goes?
+## Is it possible to have a diagram that sums up how proposal works and where the money goes?
 
 Of course, here you are 😉
 
 ![Diagram - rooms](room_diagram.png)
 
-## Is there intermediate prizes?
+## Are there intermediate prizes?
 
 Yes, if you are the first to find the key of a given room, your guild earns a part of the treasury.
