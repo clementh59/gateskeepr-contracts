@@ -37,6 +37,7 @@ make deploy_artifacts
 ## Artifacts
 
 In order to init the artifact contract, you'll need to initialize all the metadata
+
 Here is the data model:
 
 - **artifactsType**: `[typeOfTokenId1, typeOfTokenId2, typeOfTokenId3, ...]`
